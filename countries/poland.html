@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🇵🇱 Чемпионат Польши по ЧГК -- Статистика</title>
+<style>:root {
+  --bg: #0a0e1a; --card: #151d30; --card-border: #1e2a45;
+  --text: #e0e6f0; --text-muted: #8892a8; --accent: #1877F2;
+  --gold: #f59e0b; --silver: #94a3b8; --bronze: #cd7f32;
+  --green: #02e2ac; --red: #ef4444; --purple: #a855f7; --country-badge: #1877F2;
+}
+[data-theme="light"] {
+  --bg: #f0f2f5; --card: #ffffff; --card-border: #dde1e6;
+  --text: #1c1e21; --text-muted: #65676b; --accent: #1877F2;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+header { background: linear-gradient(135deg, #0a1628 0%, #162544 100%); padding: 40px 20px; text-align: center; border-bottom: 3px solid var(--accent); }
+[data-theme="light"] header { background: linear-gradient(135deg, #e8f0fe 0%, #d2e3fc 100%); }
+header h1 { font-size: 2em; margin-bottom: 8px; }
+header h1 span { color: var(--accent); }
+header p { color: var(--text-muted); font-size: 1.1em; }
+.theme-toggle { position: fixed; top: 16px; right: 16px; z-index: 100; background: var(--card); border: 1px solid var(--card-border); color: var(--text); padding: 8px 14px; border-radius: 20px; cursor: pointer; font-size: 14px; }
+nav { position: sticky; top: 0; z-index: 50; background: var(--card); border-bottom: 1px solid var(--card-border); padding: 10px 20px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+nav a { color: var(--text-muted); text-decoration: none; padding: 6px 14px; border-radius: 16px; font-size: 13px; transition: all 0.2s; }
+nav a:hover, nav a.active { background: var(--accent); color: #fff; }
+.card { background: var(--card); border: 1px solid var(--card-border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+.card h2 { font-size: 1.3em; margin-bottom: 16px; color: var(--accent); }
+.card h3 { font-size: 1.1em; margin: 16px 0 8px; }
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+.stat-box { background: var(--bg); border-radius: 8px; padding: 16px; text-align: center; }
+.stat-box .num { font-size: 2em; font-weight: 700; color: var(--accent); }
+.stat-box .label { font-size: 0.85em; color: var(--text-muted); }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; padding: 8px 10px; border-bottom: 2px solid var(--card-border); color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+td { padding: 6px 10px; border-bottom: 1px solid var(--card-border); }
+tr:hover { background: rgba(24,119,242,0.05); }
+tr.hidden { display: none; }
+.pos { font-weight: 700; width: 40px; text-align: center; }
+.score { text-align: right; font-weight: 600; }
+.country-badge { display: inline-block; background: var(--country-badge); color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 8px; margin-left: 4px; }
+.team-name { font-weight: 500; }
+.town { color: var(--text-muted); font-size: 13px; }
+.year-tag { display: inline-block; background: var(--bg); padding: 2px 8px; border-radius: 10px; font-size: 12px; margin: 1px; }
+.bar-row { display: flex; align-items: center; margin: 4px 0; gap: 8px; }
+.bar-row.hidden { display: none; }
+.bar-label { min-width: 180px; font-size: 13px; text-align: right; }
+.bar-track { flex: 1; height: 24px; background: var(--bg); border-radius: 4px; overflow: hidden; position: relative; }
+.bar { height: 100%; border-radius: 4px; transition: width 0.5s; }
+.bar-value { font-size: 12px; min-width: 30px; font-weight: 600; }
+section { scroll-margin-top: 60px; }
+section h2 { padding: 20px 0 10px; font-size: 1.4em; }
+.entity-link { color: var(--text); text-decoration: none; border-bottom: 1px dotted var(--text-muted); }
+.entity-link:hover { color: var(--accent); border-color: var(--accent); }
+.year-filter { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 14px; }
+.yfp { padding: 4px 10px; border-radius: 12px; cursor: pointer; background: var(--bg); color: var(--text-muted); font-size: 12px; border: 1px solid var(--card-border); transition: all 0.15s; }
+.yfp:hover { border-color: var(--accent); color: var(--accent); }
+.yfp.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.mode-toggle { display: flex; gap: 0; margin-bottom: 16px; justify-content: center; }
+.mode-btn { padding: 8px 20px; border: 1px solid var(--card-border); background: var(--bg); color: var(--text-muted); cursor: pointer; font-size: 13px; transition: all 0.2s; }
+.mode-btn:first-child { border-radius: 8px 0 0 8px; }
+.mode-btn:last-child { border-radius: 0 8px 8px 0; }
+.mode-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+[data-mode="overall"] .country-only { display: none; }
+[data-mode="country"] .overall-only { display: none; }
+.country-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.country-card { background: var(--card); border: 1px solid var(--card-border); border-radius: 12px; padding: 20px; transition: transform 0.15s, border-color 0.15s; text-decoration: none; color: var(--text); display: block; }
+.country-card:hover { transform: translateY(-2px); border-color: var(--accent); }
+.country-card .flag { font-size: 2em; }
+.country-card .name { font-size: 1.2em; font-weight: 600; margin: 8px 0 4px; }
+.country-card .meta { color: var(--text-muted); font-size: 13px; }
+.country-card .mini-stats { display: flex; gap: 16px; margin-top: 12px; }
+.country-card .mini-stat { text-align: center; }
+.country-card .mini-stat .n { font-size: 1.4em; font-weight: 700; color: var(--accent); }
+.country-card .mini-stat .l { font-size: 11px; color: var(--text-muted); }
+.iron-badge { display: inline-block; background: var(--green); color: #000; font-size: 11px; padding: 2px 8px; border-radius: 8px; font-weight: 600; }
+.map-container { background: var(--card); border: 1px solid var(--card-border); border-radius: 12px; padding: 20px; margin-bottom: 20px; overflow: hidden; }
+.map-container svg { width: 100%; height: auto; display: block; }
+.map-country { cursor: pointer; transition: opacity 0.2s, filter 0.2s; stroke: var(--bg); stroke-width: 0.5; }
+.map-country:hover { opacity: 1 !important; filter: brightness(1.3); }
+.map-bg { fill: var(--card-border); opacity: 0.25; stroke: none; }
+.map-flag { pointer-events: none; font-size: 14px; dominant-baseline: central; text-anchor: middle; }
+footer a { color: var(--accent); }
+@media (max-width: 600px) { .bar-label { min-width: 120px; font-size: 12px; } header h1 { font-size: 1.4em; } .stats-grid { grid-template-columns: repeat(2, 1fr); } .country-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body data-mode="country">
+<button class="theme-toggle" onclick="toggleTheme()">🌙 / ☀️</button>
+<header>
+  <h1>🇵🇱 <span>Чемпионат Польши</span></h1>
+  <p>Статистика 2018--2026 | <a href="../index.html" style="color:var(--accent)">← Все страны</a></p>
+</header>
+<nav><a href="#overview">Обзор</a><a href="#champions">Чемпионы</a><a href="#players">Игроки</a><a href="#teams">Команды</a><a href="#ironmen">Железные люди</a><a href="#tournaments">Турниры</a></nav>
+<div class="container">
+<div class="mode-toggle">
+  <button class="mode-btn" data-mode="country" onclick="setMode('country')">🏆 Зачёт ЧС</button>
+  <button class="mode-btn" data-mode="overall" onclick="setMode('overall')">🌍 Общий зачёт</button>
+</div>
+
+
+<section id="overview"><div class="card">
+  <h2>Обзор</h2>
+  <div class="stats-grid">
+    <div class="stat-box"><div class="num">7</div><div class="label">турниров</div></div>
+    <div class="stat-box"><div class="num">704</div><div class="label">игроков</div></div>
+    <div class="stat-box"><div class="num">237</div><div class="label">команд-участий</div></div>
+    <div class="stat-box"><div class="num">50</div><div class="label">макс. команд (2023)</div></div>
+  </div>
+  <h3>Рост турнира</h3>
+
+  <div class="bar-row">
+    <div class="bar-label"><a href="https://rating.chgk.info/tournament/4853" target="_blank" class="entity-link">2018</a></div>
+    <div class="bar-track">
+      <div class="bar" style="width:40.0%;background:var(--accent);opacity:0.4;position:absolute"></div>
+      <div class="bar" style="width:22.0%;background:var(--accent);position:absolute"></div>
+    </div>
+    <div class="bar-value">20 (11 ЧС)</div>
+  </div>
+
+  <div class="bar-row">
+    <div class="bar-label"><a href="https://rating.chgk.info/tournament/5484" target="_blank" class="entity-link">2019</a></div>
+    <div class="bar-track">
+      <div class="bar" style="width:44.0%;background:var(--accent);opacity:0.4;position:absolute"></div>
+      <div class="bar" style="width:20.0%;background:var(--accent);position:absolute"></div>
+    </div>
+    <div class="bar-value">22 (10 ЧС)</div>
+  </div>
+
+  <div class="bar-row">
+    <div class="bar-label"><a href="https://rating.chgk.info/tournament/8178" target="_blank" class="entity-link">2022</a></div>
+    <div class="bar-track">
+      <div class="bar" style="width:48.0%;background:var(--accent);opacity:0.4;position:absolute"></div>
+      <div class="bar" style="width:30.0%;background:var(--accent);position:absolute"></div>
+    </div>
+    <div class="bar-value">24 (15 ЧС)</div>
+  </div>
+
+  <div class="bar-row">
+    <div class="bar-label"><a href="https://rating.chgk.info/tournament/8661" target="_blank" class="entity-link">2023</a></div>
+    <div class="bar-track">
+      <div class="bar" style="width:100.0%;background:var(--accent);opacity:0.4;position:absolute"></div>
+      <div class="bar" style="width:44.0%;background:var(--accent);position:absolute"></div>
+    </div>
+    <div class="bar-value">50 (22 ЧС)</div>
+  </div>
+
+  <div class="bar-row">
+    <div class="bar-label"><a href="https://rating.chgk.info/tournament/10468" target="_blank" class="entity-link">2024</a></div>
+    <div class="bar-track">
+      <div class="bar" style="width:56.00000000000001%;background:var(--accent);opacity:0.4;position:absolute"></div>
+      <div class="bar" style="width:0.0%;background:var(--accent);position:absolute"></div>
+    </div>
+    <div class="bar-value">28 (0 ЧС)</div>
+  </div>
+
+  <div class="bar-row">
+    <div class="bar-label"><a href="https://rating.chgk.info/tournament/11706" target="_blank" class="entity-link">2025</a></div>
+    <div class="bar-track">
+      <div class="bar" style="width:90.0%;background:var(--accent);opacity:0.4;position:absolute"></div>
+      <div class="bar" style="width:50.0%;background:var(--accent);position:absolute"></div>
+    </div>
+    <div class="bar-value">45 (25 ЧС)</div>
+  </div>
+
+  <div class="bar-row">
+    <div class="bar-label"><a href="https://rating.chgk.info/tournament/13180" target="_blank" class="entity-link">2026</a></div>
+    <div class="bar-track">
+      <div class="bar" style="width:96.0%;background:var(--accent);opacity:0.4;position:absolute"></div>
+      <div class="bar" style="width:54.0%;background:var(--accent);position:absolute"></div>
+    </div>
+    <div class="bar-value">48 (27 ЧС)</div>
+  </div>
+</div></section>
+
+<section id="champions"><div class="card">
+  <h2>Чемпионы по годам</h2>
+  <table><tr><th>Год</th><th>Чемпион (общий)</th><th>Взято</th><th>Чемпион ЧС</th><th>Взято</th><th>Место</th><th>Команд</th></tr>
+    <tr>
+      <td class="pos"><a href="https://rating.chgk.info/tournament/4853" target="_blank" class="entity-link">2018</a></td>
+      <td class="team-name"><a href="https://rating.chgk.info/teams/308" target="_blank" class="entity-link">Номер 6</a></td>
+      <td class="score">46</td>
+      <td class="team-name" style="color:var(--gold)"><a href="https://rating.chgk.info/teams/56081" target="_blank" class="entity-link">Глеб Шишкин</a></td>
+      <td class="score">45</td>
+      <td class="pos">2</td>
+      <td class="pos">20</td></tr>
+    <tr>
+      <td class="pos"><a href="https://rating.chgk.info/tournament/5484" target="_blank" class="entity-link">2019</a></td>
+      <td class="team-name"><a href="https://rating.chgk.info/teams/65268" target="_blank" class="entity-link">В гостях у Кафки</a></td>
+      <td class="score">54</td>
+      <td class="team-name" style="color:var(--gold)"><a href="https://rating.chgk.info/teams/56081" target="_blank" class="entity-link">Глеб Шишкин</a></td>
+      <td class="score">52</td>
+      <td class="pos">3</td>
+      <td class="pos">22</td></tr>
+    <tr>
+      <td class="pos"><a href="https://rating.chgk.info/tournament/8178" target="_blank" class="entity-link">2022</a></td>
+      <td class="team-name"><a href="https://rating.chgk.info/teams/87450" target="_blank" class="entity-link">Молодой медведь гуляет по лесу и лакомится ветками</a></td>
+      <td class="score">58</td>
+      <td class="team-name" style="color:var(--gold)"><a href="https://rating.chgk.info/teams/77174" target="_blank" class="entity-link">Polish Space Marines</a></td>
+      <td class="score">43</td>
+      <td class="pos">4</td>
+      <td class="pos">24</td></tr>
+    <tr>
+      <td class="pos"><a href="https://rating.chgk.info/tournament/8661" target="_blank" class="entity-link">2023</a></td>
+      <td class="team-name"><a href="https://rating.chgk.info/teams/85064" target="_blank" class="entity-link">Кринж без выходных</a></td>
+      <td class="score">76</td>
+      <td class="team-name"><a href="https://rating.chgk.info/teams/85064" target="_blank" class="entity-link">Кринж без выходных</a></td>
+      <td class="score">76</td>
+      <td class="pos">1</td>
+      <td class="pos">50</td></tr>
+    <tr>
+      <td class="pos"><a href="https://rating.chgk.info/tournament/10468" target="_blank" class="entity-link">2024</a></td>
+      <td class="team-name"><a href="https://rating.chgk.info/teams/77174" target="_blank" class="entity-link">Polish Space Marines</a></td>
+      <td class="score">63</td>
+      <td class="team-name" style="color:var(--gold)">?</td>
+      <td class="score">—</td>
+      <td class="pos">0</td>
+      <td class="pos">28</td></tr>
+    <tr>
+      <td class="pos"><a href="https://rating.chgk.info/tournament/11706" target="_blank" class="entity-link">2025</a></td>
+      <td class="team-name"><a href="https://rating.chgk.info/teams/99764" target="_blank" class="entity-link">Одинокие ковбои</a></td>
+      <td class="score">74</td>
+      <td class="team-name" style="color:var(--gold)"><a href="https://rating.chgk.info/teams/85064" target="_blank" class="entity-link">Кринж без выходных</a></td>
+      <td class="score">69</td>
+      <td class="pos">2</td>
+      <td class="pos">45</td></tr>
+    <tr>
+      <td class="pos"><a href="https://rating.chgk.info/tournament/13180" target="_blank" class="entity-link">2026</a></td>
+      <td class="team-name"><a href="https://rating.chgk.info/teams/99764" target="_blank" class="entity-link">Одинокие ковбои</a></td>
+      <td class="score">79</td>
+      <td class="team-name" style="color:var(--gold)"><a href="https://rating.chgk.info/teams/85064" target="_blank" class="entity-link">Кринж без выходных</a></td>
+      <td class="score">71</td>
+      <td class="pos">3</td>
+      <td class="pos">48</td></tr>
+</table></div></section>
+<section id="players"><div class="card country-only"><h2>Игроки -- победы (зачёт ЧС)</h2>
+<div class="year-filter" id="yf-pw-c"><button class="yfp" data-section="pw-c" data-year="all" onclick="filterYear(this)">Все</button><button class="yfp" data-section="pw-c" data-year="2018" onclick="filterYear(this)">2018</button><button class="yfp" data-section="pw-c" data-year="2019" onclick="filterYear(this)">2019</button><button class="yfp" data-section="pw-c" data-year="2022" onclick="filterYear(this)">2022</button><button class="yfp" data-section="pw-c" data-year="2023" onclick="filterYear(this)">2023</button><button class="yfp" data-section="pw-c" data-year="2024" onclick="filterYear(this)">2024</button><button class="yfp" data-section="pw-c" data-year="2025" onclick="filterYear(this)">2025</button><button class="yfp" data-section="pw-c" data-year="2026" onclick="filterYear(this)">2026</button></div>
+<div class="bar-row filterable" data-section="pw-c" data-years="2018,2019,2023,2025,2026"><div class="bar-label"><a href="https://rating.chgk.info/player/5611" target="_blank" class="entity-link">Алексей Винокуров</a></div><div class="bar-track"><div class="bar" style="width:100.0%;background:#f59e0b"></div></div><div class="bar-value">5</div></div>
+<div class="bar-row filterable" data-section="pw-c" data-years="2018,2023,2025,2026"><div class="bar-label"><a href="https://rating.chgk.info/player/29516" target="_blank" class="entity-link">Дмитрий Слободянюк</a></div><div class="bar-track"><div class="bar" style="width:80.0%;background:#f59e0b"></div></div><div class="bar-value">4</div></div>
+<div class="bar-row filterable" data-section="pw-c" data-years="2018,2019,2022"><div class="bar-label"><a href="https://rating.chgk.info/player/40390" target="_blank" class="entity-link">Елена Гордынец</a></div><div class="bar-track"><div class="bar" style="width:60.0%;background:#f59e0b"></div></div><div class="bar-value">3</div></div>
+<div class="bar-row filterable" data-section="pw-c" data-years="2018,2019,2022"><div class="bar-label"><a href="https://rating.chgk.info/player/9105" target="_blank" class="entity-link">Сергей Демяненко</a></div><div class="bar-track"><div class="bar" style="width:60.0%;background:#f59e0b"></div></div><div class="bar-value">3</div></div>
+<div class="bar-row filterable" data-section="pw-c" data-years="2023,2025,2026"><div class="bar-label"><a href="https://rating.chgk.info/player/40393" target="_blank" class="entity-link">Юрий Разумов</a></div><div class="bar-track"><div class="bar" style="width:60.0%;background:#f59e0b"></div></div><div class="bar-value">3</div></div>
+<div class="bar-row filterable" data-section="pw-c" data-years="2023,2025,2026"><div class="bar-label"><a href="https://rating.chgk.info/player/39285" target="_blank" class="entity-link">Владислава Плохих</a></div><div class="bar-track"><div class="bar" style="width:60.0%;background:#f59e0b"></div></div><div class="bar-value">3</div></div>
+<div class="bar-row filterable" data-section="pw-c" data-years="2018,2019"><div class="bar-label"><a href="https://rating.chgk.info/player/17121" target="_blank" class="entity-link">Владимир Кукарских</a></div><div class="bar-track"><div class="bar" style="width:40.0%;background:#f59e0b"></div></div><div class="bar-value">2</div></div>
+<div class="bar-row filterable" data-section="pw-c" data-years="2023,2026"><div class="bar-label"><a href="https://rating.chgk.info/player/158668" target="_blank" class="entity-link">Вера Монина</a></div><div class="bar-track"><div class="bar" style="width:40.0%;background:#f59e0b"></div></div><div class="bar-value">2</div></div>
+<div class="bar-row filterable" data-section="pw-c" data-years="2018"><div class="bar-label"><a href="https://rating.chgk.info/player/37751" target="_blank" class="entity-link">Андрей Руденко</a></div><div class="bar-track"><div class="bar" style="width:20.0%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row filterable" data-section="pw-c" data-years="2019"><div class="bar-label"><a href="https://rating.chgk.info/player/22242" target="_blank" class="entity-link">Ксения Накладова</a></div><div class="bar-track"><div class="bar" style="width:20.0%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row filterable" data-section="pw-c" data-years="2019"><div class="bar-label"><a href="https://rating.chgk.info/player/12401" target="_blank" class="entity-link">Егор Игнатенков</a></div><div class="bar-track"><div class="bar" style="width:20.0%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row filterable" data-section="pw-c" data-years="2022"><div class="bar-label"><a href="https://rating.chgk.info/player/77785" target="_blank" class="entity-link">Станислав Адаскевич</a></div><div class="bar-track"><div class="bar" style="width:20.0%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row filterable" data-section="pw-c" data-years="2022"><div class="bar-label"><a href="https://rating.chgk.info/player/71501" target="_blank" class="entity-link">Мария Завьялова</a></div><div class="bar-track"><div class="bar" style="width:20.0%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row filterable" data-section="pw-c" data-years="2022"><div class="bar-label"><a href="https://rating.chgk.info/player/28948" target="_blank" class="entity-link">Евгений Сибиряк</a></div><div class="bar-track"><div class="bar" style="width:20.0%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row filterable" data-section="pw-c" data-years="2022"><div class="bar-label"><a href="https://rating.chgk.info/player/5876" target="_blank" class="entity-link">Виктория Волкова</a></div><div class="bar-track"><div class="bar" style="width:20.0%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row filterable" data-section="pw-c" data-years="2023"><div class="bar-label"><a href="https://rating.chgk.info/player/21952" target="_blank" class="entity-link">Павел Муха</a></div><div class="bar-track"><div class="bar" style="width:20.0%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row filterable" data-section="pw-c" data-years="2025"><div class="bar-label"><a href="https://rating.chgk.info/player/41383" target="_blank" class="entity-link">Климентий Комиссаров</a></div><div class="bar-track"><div class="bar" style="width:20.0%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row filterable" data-section="pw-c" data-years="2025"><div class="bar-label"><a href="https://rating.chgk.info/player/35861" target="_blank" class="entity-link">Дарья Соловей</a></div><div class="bar-track"><div class="bar" style="width:20.0%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row filterable" data-section="pw-c" data-years="2026"><div class="bar-label"><a href="https://rating.chgk.info/player/37259" target="_blank" class="entity-link">Юрий Яковлев</a></div><div class="bar-track"><div class="bar" style="width:20.0%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+</div>
+<div class="card overall-only"><h2>Игроки -- победы (общий зачёт)</h2>
+<div class="year-filter" id="yf-pw-o"><button class="yfp" data-section="pw-o" data-year="all" onclick="filterYear(this)">Все</button><button class="yfp" data-section="pw-o" data-year="2018" onclick="filterYear(this)">2018</button><button class="yfp" data-section="pw-o" data-year="2019" onclick="filterYear(this)">2019</button><button class="yfp" data-section="pw-o" data-year="2022" onclick="filterYear(this)">2022</button><button class="yfp" data-section="pw-o" data-year="2023" onclick="filterYear(this)">2023</button><button class="yfp" data-section="pw-o" data-year="2024" onclick="filterYear(this)">2024</button><button class="yfp" data-section="pw-o" data-year="2025" onclick="filterYear(this)">2025</button><button class="yfp" data-section="pw-o" data-year="2026" onclick="filterYear(this)">2026</button></div>
+<div class="bar-row filterable" data-section="pw-o" data-years="2022,2025,2026"><div class="bar-label"><a href="https://rating.chgk.info/player/19541" target="_blank" class="entity-link">Михаил Малкин</a></div><div class="bar-track"><div class="bar" style="width:100.0%;background:#f59e0b"></div></div><div class="bar-value">3</div></div>
+<div class="bar-row filterable" data-section="pw-o" data-years="2024,2025,2026"><div class="bar-label"><a href="https://rating.chgk.info/player/28689" target="_blank" class="entity-link">Инна Семёнова</a></div><div class="bar-track"><div class="bar" style="width:100.0%;background:#f59e0b"></div></div><div class="bar-value">3</div></div>
+<div class="bar-row filterable" data-section="pw-o" data-years="2018,2023"><div class="bar-label"><a href="https://rating.chgk.info/player/21952" target="_blank" class="entity-link">Павел Муха</a></div><div class="bar-track"><div class="bar" style="width:66.66666666666666%;background:#f59e0b"></div></div><div class="bar-value">2</div></div>
+<div class="bar-row filterable" data-section="pw-o" data-years="2025,2026"><div class="bar-label"><a href="https://rating.chgk.info/player/169839" target="_blank" class="entity-link">Дмитрий Панкратов</a></div><div class="bar-track"><div class="bar" style="width:66.66666666666666%;background:#f59e0b"></div></div><div class="bar-value">2</div></div>
+<div class="bar-row filterable" data-section="pw-o" data-years="2025,2026"><div class="bar-label"><a href="https://rating.chgk.info/player/81677" target="_blank" class="entity-link">Олег Богомолов</a></div><div class="bar-track"><div class="bar" style="width:66.66666666666666%;background:#f59e0b"></div></div><div class="bar-value">2</div></div>
+<div class="bar-row filterable" data-section="pw-o" data-years="2025,2026"><div class="bar-label"><a href="https://rating.chgk.info/player/4223" target="_blank" class="entity-link">Константин Бриф</a></div><div class="bar-track"><div class="bar" style="width:66.66666666666666%;background:#f59e0b"></div></div><div class="bar-value">2</div></div>
+<div class="bar-row filterable" data-section="pw-o" data-years="2018"><div class="bar-label"><a href="https://rating.chgk.info/player/42346" target="_blank" class="entity-link">Богдана Романцова</a></div><div class="bar-track"><div class="bar" style="width:33.33333333333333%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row filterable" data-section="pw-o" data-years="2018"><div class="bar-label"><a href="https://rating.chgk.info/player/35124" target="_blank" class="entity-link">Алексей Чирков</a></div><div class="bar-track"><div class="bar" style="width:33.33333333333333%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row filterable" data-section="pw-o" data-years="2018"><div class="bar-label"><a href="https://rating.chgk.info/player/29751" target="_blank" class="entity-link">Ярослав Смолянинов</a></div><div class="bar-track"><div class="bar" style="width:33.33333333333333%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row filterable" data-section="pw-o" data-years="2018"><div class="bar-label"><a href="https://rating.chgk.info/player/21176" target="_blank" class="entity-link">Денис Михалёв</a></div><div class="bar-track"><div class="bar" style="width:33.33333333333333%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row filterable" data-section="pw-o" data-years="2018"><div class="bar-label"><a href="https://rating.chgk.info/player/12401" target="_blank" class="entity-link">Егор Игнатенков</a></div><div class="bar-track"><div class="bar" style="width:33.33333333333333%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row filterable" data-section="pw-o" data-years="2019"><div class="bar-label"><a href="https://rating.chgk.info/player/138163" target="_blank" class="entity-link">Айгуль Сембаева</a></div><div class="bar-track"><div class="bar" style="width:33.33333333333333%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row filterable" data-section="pw-o" data-years="2019"><div class="bar-label"><a href="https://rating.chgk.info/player/130795" target="_blank" class="entity-link">Александр Шелёмин</a></div><div class="bar-track"><div class="bar" style="width:33.33333333333333%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row filterable" data-section="pw-o" data-years="2019"><div class="bar-label"><a href="https://rating.chgk.info/player/117140" target="_blank" class="entity-link">Денис Руденко</a></div><div class="bar-track"><div class="bar" style="width:33.33333333333333%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row filterable" data-section="pw-o" data-years="2019"><div class="bar-label"><a href="https://rating.chgk.info/player/23487" target="_blank" class="entity-link">Илья Онскуль</a></div><div class="bar-track"><div class="bar" style="width:33.33333333333333%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row filterable" data-section="pw-o" data-years="2019"><div class="bar-label"><a href="https://rating.chgk.info/player/21006" target="_blank" class="entity-link">Павел Миронов</a></div><div class="bar-track"><div class="bar" style="width:33.33333333333333%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row filterable" data-section="pw-o" data-years="2019"><div class="bar-label"><a href="https://rating.chgk.info/player/10910" target="_blank" class="entity-link">Алексей Жилинский</a></div><div class="bar-track"><div class="bar" style="width:33.33333333333333%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row filterable" data-section="pw-o" data-years="2022"><div class="bar-label"><a href="https://rating.chgk.info/player/101864" target="_blank" class="entity-link">Елизавета Лысенко</a></div><div class="bar-track"><div class="bar" style="width:33.33333333333333%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row filterable" data-section="pw-o" data-years="2022"><div class="bar-label"><a href="https://rating.chgk.info/player/77673" target="_blank" class="entity-link">Михаил Папков</a></div><div class="bar-track"><div class="bar" style="width:33.33333333333333%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row filterable" data-section="pw-o" data-years="2022"><div class="bar-label"><a href="https://rating.chgk.info/player/71907" target="_blank" class="entity-link">Елизавета Короткова</a></div><div class="bar-track"><div class="bar" style="width:33.33333333333333%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row filterable" data-section="pw-o" data-years="2022"><div class="bar-label"><a href="https://rating.chgk.info/player/69720" target="_blank" class="entity-link">Максим Галкин</a></div><div class="bar-track"><div class="bar" style="width:33.33333333333333%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row filterable" data-section="pw-o" data-years="2022"><div class="bar-label"><a href="https://rating.chgk.info/player/32919" target="_blank" class="entity-link">Булат Фаттахов</a></div><div class="bar-track"><div class="bar" style="width:33.33333333333333%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row filterable" data-section="pw-o" data-years="2023"><div class="bar-label"><a href="https://rating.chgk.info/player/158668" target="_blank" class="entity-link">Вера Монина</a></div><div class="bar-track"><div class="bar" style="width:33.33333333333333%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row filterable" data-section="pw-o" data-years="2023"><div class="bar-label"><a href="https://rating.chgk.info/player/40393" target="_blank" class="entity-link">Юрий Разумов</a></div><div class="bar-track"><div class="bar" style="width:33.33333333333333%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row filterable" data-section="pw-o" data-years="2023"><div class="bar-label"><a href="https://rating.chgk.info/player/39285" target="_blank" class="entity-link">Владислава Плохих</a></div><div class="bar-track"><div class="bar" style="width:33.33333333333333%;background:#f59e0b"></div></div><div class="bar-value">1</div></div>
+</div>
+<div class="card country-only"><h2>Игроки -- подиумы (зачёт ЧС)</h2>
+<div class="year-filter" id="yf-pp-c"><button class="yfp" data-section="pp-c" data-year="all" onclick="filterYear(this)">Все</button><button class="yfp" data-section="pp-c" data-year="2018" onclick="filterYear(this)">2018</button><button class="yfp" data-section="pp-c" data-year="2019" onclick="filterYear(this)">2019</button><button class="yfp" data-section="pp-c" data-year="2022" onclick="filterYear(this)">2022</button><button class="yfp" data-section="pp-c" data-year="2023" onclick="filterYear(this)">2023</button><button class="yfp" data-section="pp-c" data-year="2024" onclick="filterYear(this)">2024</button><button class="yfp" data-section="pp-c" data-year="2025" onclick="filterYear(this)">2025</button><button class="yfp" data-section="pp-c" data-year="2026" onclick="filterYear(this)">2026</button></div>
+<table><thead><tr><th>#</th><th>Игрок</th><th>Подиумов</th><th>Побед</th><th>Детали</th></tr></thead><tbody>
+<tr class="filterable" data-section="pp-c" data-years="2018,2019,2023,2025,2026"><td class="pos">1</td><td class="team-name"><a href="https://rating.chgk.info/player/5611" target="_blank" class="entity-link">Алексей Винокуров</a></td><td class="score">5</td><td class="score">5</td><td><span class="year-tag">🥇2018</span> <span class="year-tag">🥇2019</span> <span class="year-tag">🥇2023</span> <span class="year-tag">🥇2025</span> <span class="year-tag">🥇2026</span></td></tr>
+<tr class="filterable" data-section="pp-c" data-years="2018,2019,2022,2023,2026"><td class="pos">2</td><td class="team-name"><a href="https://rating.chgk.info/player/9105" target="_blank" class="entity-link">Сергей Демяненко</a></td><td class="score">5</td><td class="score">3</td><td><span class="year-tag">🥇2018</span> <span class="year-tag">🥇2019</span> <span class="year-tag">🥇2022</span> <span class="year-tag">🥈2023</span> <span class="year-tag">🥈2026</span></td></tr>
+<tr class="filterable" data-section="pp-c" data-years="2018,2023,2025,2026"><td class="pos">3</td><td class="team-name"><a href="https://rating.chgk.info/player/29516" target="_blank" class="entity-link">Дмитрий Слободянюк</a></td><td class="score">4</td><td class="score">4</td><td><span class="year-tag">🥇2018</span> <span class="year-tag">🥇2023</span> <span class="year-tag">🥇2025</span> <span class="year-tag">🥇2026</span></td></tr>
+<tr class="filterable" data-section="pp-c" data-years="2018,2019,2022,2023"><td class="pos">4</td><td class="team-name"><a href="https://rating.chgk.info/player/40390" target="_blank" class="entity-link">Елена Гордынец</a></td><td class="score">4</td><td class="score">3</td><td><span class="year-tag">🥇2018</span> <span class="year-tag">🥇2019</span> <span class="year-tag">🥇2022</span> <span class="year-tag">🥈2023</span></td></tr>
+<tr class="filterable" data-section="pp-c" data-years="2023,2025,2026"><td class="pos">5</td><td class="team-name"><a href="https://rating.chgk.info/player/40393" target="_blank" class="entity-link">Юрий Разумов</a></td><td class="score">3</td><td class="score">3</td><td><span class="year-tag">🥇2023</span> <span class="year-tag">🥇2025</span> <span class="year-tag">🥇2026</span></td></tr>
+<tr class="filterable" data-section="pp-c" data-years="2023,2025,2026"><td class="pos">6</td><td class="team-name"><a href="https://rating.chgk.info/player/39285" target="_blank" class="entity-link">Владислава Плохих</a></td><td class="score">3</td><td class="score">3</td><td><span class="year-tag">🥇2023</span> <span class="year-tag">🥇2025</span> <span class="year-tag">🥇2026</span></td></tr>
+<tr class="filterable" data-section="pp-c" data-years="2022,2023,2026"><td class="pos">7</td><td class="team-name"><a href="https://rating.chgk.info/player/5876" target="_blank" class="entity-link">Виктория Волкова</a></td><td class="score">3</td><td class="score">1</td><td><span class="year-tag">🥇2022</span> <span class="year-tag">🥈2023</span> <span class="year-tag">🥈2026</span></td></tr>
+<tr class="filterable" data-section="pp-c" data-years="2018,2019,2022"><td class="pos">8</td><td class="team-name"><a href="https://rating.chgk.info/player/22494" target="_blank" class="entity-link">Наталия Ненашева</a></td><td class="score">3</td><td class="score">0</td><td><span class="year-tag">🥉2018</span> <span class="year-tag">🥉2019</span> <span class="year-tag">🥈2022</span></td></tr>
+<tr class="filterable" data-section="pp-c" data-years="2018,2019,2022"><td class="pos">9</td><td class="team-name"><a href="https://rating.chgk.info/player/22491" target="_blank" class="entity-link">Артём Ненашев</a></td><td class="score">3</td><td class="score">0</td><td><span class="year-tag">🥉2018</span> <span class="year-tag">🥉2019</span> <span class="year-tag">🥈2022</span></td></tr>
+<tr class="filterable" data-section="pp-c" data-years="2018,2019,2022"><td class="pos">10</td><td class="team-name"><a href="https://rating.chgk.info/player/10964" target="_blank" class="entity-link">Александр Жорняк</a></td><td class="score">3</td><td class="score">0</td><td><span class="year-tag">🥉2018</span> <span class="year-tag">🥉2019</span> <span class="year-tag">🥈2022</span></td></tr>
+<tr class="filterable" data-section="pp-c" data-years="2018,2019"><td class="pos">11</td><td class="team-name"><a href="https://rating.chgk.info/player/17121" target="_blank" class="entity-link">Владимир Кукарских</a></td><td class="score">2</td><td class="score">2</td><td><span class="year-tag">🥇2018</span> <span class="year-tag">🥇2019</span></td></tr>
+<tr class="filterable" data-section="pp-c" data-years="2023,2026"><td class="pos">12</td><td class="team-name"><a href="https://rating.chgk.info/player/158668" target="_blank" class="entity-link">Вера Монина</a></td><td class="score">2</td><td class="score">2</td><td><span class="year-tag">🥇2023</span> <span class="year-tag">🥇2026</span></td></tr>
+<tr class="filterable" data-section="pp-c" data-years="2022,2023"><td class="pos">13</td><td class="team-name"><a href="https://rating.chgk.info/player/71501" target="_blank" class="entity-link">Мария Завьялова</a></td><td class="score">2</td><td class="score">1</td><td><span class="year-tag">🥇2022</span> <span class="year-tag">🥈2023</span></td></tr>
+<tr class="filterable" data-section="pp-c" data-years="2022,2023"><td class="pos">14</td><td class="team-name"><a href="https://rating.chgk.info/player/28948" target="_blank" class="entity-link">Евгений Сибиряк</a></td><td class="score">2</td><td class="score">1</td><td><span class="year-tag">🥇2022</span> <span class="year-tag">🥈2023</span></td></tr>
+<tr class="filterable" data-section="pp-c" data-years="2025,2026"><td class="pos">15</td><td class="team-name"><a href="https://rating.chgk.info/player/35861" target="_blank" class="entity-link">Дарья Соловей</a></td><td class="score">2</td><td class="score">1</td><td><span class="year-tag">🥇2025</span> <span class="year-tag">🥈2026</span></td></tr>
+<tr class="filterable" data-section="pp-c" data-years="2018,2019"><td class="pos">16</td><td class="team-name"><a href="https://rating.chgk.info/player/140910" target="_blank" class="entity-link">Илья Лопатин</a></td><td class="score">2</td><td class="score">0</td><td><span class="year-tag">🥉2018</span> <span class="year-tag">🥉2019</span></td></tr>
+<tr class="filterable" data-section="pp-c" data-years="2018,2019"><td class="pos">17</td><td class="team-name"><a href="https://rating.chgk.info/player/84704" target="_blank" class="entity-link">Дарья Степаньян</a></td><td class="score">2</td><td class="score">0</td><td><span class="year-tag">🥉2018</span> <span class="year-tag">🥉2019</span></td></tr>
+<tr class="filterable" data-section="pp-c" data-years="2018,2019"><td class="pos">18</td><td class="team-name"><a href="https://rating.chgk.info/player/23287" target="_blank" class="entity-link">Александр Огнев</a></td><td class="score">2</td><td class="score">0</td><td><span class="year-tag">🥉2018</span> <span class="year-tag">🥉2019</span></td></tr>
+<tr class="filterable" data-section="pp-c" data-years="2023,2026"><td class="pos">19</td><td class="team-name"><a href="https://rating.chgk.info/player/28656" target="_blank" class="entity-link">Валерий Семёнов</a></td><td class="score">2</td><td class="score">0</td><td><span class="year-tag">🥈2023</span> <span class="year-tag">🥈2026</span></td></tr>
+<tr class="filterable" data-section="pp-c" data-years="2023,2026"><td class="pos">20</td><td class="team-name"><a href="https://rating.chgk.info/player/18168" target="_blank" class="entity-link">Надежда Лейчинская</a></td><td class="score">2</td><td class="score">0</td><td><span class="year-tag">🥈2023</span> <span class="year-tag">🥈2026</span></td></tr>
+<tr class="filterable" data-section="pp-c" data-years="2023,2026"><td class="pos">21</td><td class="team-name"><a href="https://rating.chgk.info/player/29049" target="_blank" class="entity-link">Егор Сидорович</a></td><td class="score">2</td><td class="score">0</td><td><span class="year-tag">🥉2023</span> <span class="year-tag">🥉2026</span></td></tr>
+<tr class="filterable" data-section="pp-c" data-years="2023,2026"><td class="pos">22</td><td class="team-name"><a href="https://rating.chgk.info/player/28419" target="_blank" class="entity-link">Павел Свердлов</a></td><td class="score">2</td><td class="score">0</td><td><span class="year-tag">🥉2023</span> <span class="year-tag">🥉2026</span></td></tr>
+<tr class="filterable" data-section="pp-c" data-years="2023,2026"><td class="pos">23</td><td class="team-name"><a href="https://rating.chgk.info/player/28085" target="_blank" class="entity-link">Яна Ярош</a></td><td class="score">2</td><td class="score">0</td><td><span class="year-tag">🥉2023</span> <span class="year-tag">🥉2026</span></td></tr>
+<tr class="filterable" data-section="pp-c" data-years="2023,2026"><td class="pos">24</td><td class="team-name"><a href="https://rating.chgk.info/player/10989" target="_blank" class="entity-link">Алексей Жуков</a></td><td class="score">2</td><td class="score">0</td><td><span class="year-tag">🥉2023</span> <span class="year-tag">🥉2026</span></td></tr>
+<tr class="filterable" data-section="pp-c" data-years="2023,2026"><td class="pos">25</td><td class="team-name"><a href="https://rating.chgk.info/player/4602" target="_blank" class="entity-link">Александра Бурчалова</a></td><td class="score">2</td><td class="score">0</td><td><span class="year-tag">🥉2023</span> <span class="year-tag">🥉2026</span></td></tr>
+</tbody></table></div>
+<div class="card overall-only"><h2>Игроки -- подиумы (общий зачёт)</h2>
+<div class="year-filter" id="yf-pp-o"><button class="yfp" data-section="pp-o" data-year="all" onclick="filterYear(this)">Все</button><button class="yfp" data-section="pp-o" data-year="2018" onclick="filterYear(this)">2018</button><button class="yfp" data-section="pp-o" data-year="2019" onclick="filterYear(this)">2019</button><button class="yfp" data-section="pp-o" data-year="2022" onclick="filterYear(this)">2022</button><button class="yfp" data-section="pp-o" data-year="2023" onclick="filterYear(this)">2023</button><button class="yfp" data-section="pp-o" data-year="2024" onclick="filterYear(this)">2024</button><button class="yfp" data-section="pp-o" data-year="2025" onclick="filterYear(this)">2025</button><button class="yfp" data-section="pp-o" data-year="2026" onclick="filterYear(this)">2026</button></div>
+<table><thead><tr><th>#</th><th>Игрок</th><th>Подиумов</th><th>Побед</th><th>Детали</th></tr></thead><tbody>
+<tr class="filterable" data-section="pp-o" data-years="2018,2019,2022,2023,2024,2025,2026"><td class="pos">1</td><td class="team-name"><a href="https://rating.chgk.info/player/5611" target="_blank" class="entity-link">Алексей Винокуров</a></td><td class="score">7</td><td class="score">1</td><td><span class="year-tag">🥈2018</span> <span class="year-tag">🥉2019</span> <span class="year-tag">🥈2022</span> <span class="year-tag">🥇2023</span> <span class="year-tag">🥈2024</span> <span class="year-tag">🥈2025</span> <span class="year-tag">🥉2026</span></td></tr>
+<tr class="filterable" data-section="pp-o" data-years="2018,2022,2023,2024,2025,2026"><td class="pos">2</td><td class="team-name"><a href="https://rating.chgk.info/player/29516" target="_blank" class="entity-link">Дмитрий Слободянюк</a></td><td class="score">6</td><td class="score">1</td><td><span class="year-tag">🥈2018</span> <span class="year-tag">🥈2022</span> <span class="year-tag">🥇2023</span> <span class="year-tag">🥈2024</span> <span class="year-tag">🥈2025</span> <span class="year-tag">🥉2026</span></td></tr>
+<tr class="filterable" data-section="pp-o" data-years="2019,2022,2023,2024,2025,2026"><td class="pos">3</td><td class="team-name"><a href="https://rating.chgk.info/player/40393" target="_blank" class="entity-link">Юрий Разумов</a></td><td class="score">6</td><td class="score">1</td><td><span class="year-tag">🥈2019</span> <span class="year-tag">🥈2022</span> <span class="year-tag">🥇2023</span> <span class="year-tag">🥈2024</span> <span class="year-tag">🥈2025</span> <span class="year-tag">🥉2026</span></td></tr>
+<tr class="filterable" data-section="pp-o" data-years="2022,2023,2024,2025,2026"><td class="pos">4</td><td class="team-name"><a href="https://rating.chgk.info/player/39285" target="_blank" class="entity-link">Владислава Плохих</a></td><td class="score">5</td><td class="score">1</td><td><span class="year-tag">🥈2022</span> <span class="year-tag">🥇2023</span> <span class="year-tag">🥈2024</span> <span class="year-tag">🥈2025</span> <span class="year-tag">🥉2026</span></td></tr>
+<tr class="filterable" data-section="pp-o" data-years="2022,2023,2024,2026"><td class="pos">5</td><td class="team-name"><a href="https://rating.chgk.info/player/158668" target="_blank" class="entity-link">Вера Монина</a></td><td class="score">4</td><td class="score">1</td><td><span class="year-tag">🥈2022</span> <span class="year-tag">🥇2023</span> <span class="year-tag">🥈2024</span> <span class="year-tag">🥉2026</span></td></tr>
+<tr class="filterable" data-section="pp-o" data-years="2022,2025,2026"><td class="pos">6</td><td class="team-name"><a href="https://rating.chgk.info/player/19541" target="_blank" class="entity-link">Михаил Малкин</a></td><td class="score">3</td><td class="score">3</td><td><span class="year-tag">🥇2022</span> <span class="year-tag">🥇2025</span> <span class="year-tag">🥇2026</span></td></tr>
+<tr class="filterable" data-section="pp-o" data-years="2024,2025,2026"><td class="pos">7</td><td class="team-name"><a href="https://rating.chgk.info/player/28689" target="_blank" class="entity-link">Инна Семёнова</a></td><td class="score">3</td><td class="score">3</td><td><span class="year-tag">🥇2024</span> <span class="year-tag">🥇2025</span> <span class="year-tag">🥇2026</span></td></tr>
+<tr class="filterable" data-section="pp-o" data-years="2018,2019,2026"><td class="pos">8</td><td class="team-name"><a href="https://rating.chgk.info/player/12401" target="_blank" class="entity-link">Егор Игнатенков</a></td><td class="score">3</td><td class="score">1</td><td><span class="year-tag">🥇2018</span> <span class="year-tag">🥉2019</span> <span class="year-tag">🥈2026</span></td></tr>
+<tr class="filterable" data-section="pp-o" data-years="2018,2019,2024"><td class="pos">9</td><td class="team-name"><a href="https://rating.chgk.info/player/9105" target="_blank" class="entity-link">Сергей Демяненко</a></td><td class="score">3</td><td class="score">1</td><td><span class="year-tag">🥈2018</span> <span class="year-tag">🥉2019</span> <span class="year-tag">🥇2024</span></td></tr>
+<tr class="filterable" data-section="pp-o" data-years="2018,2023"><td class="pos">10</td><td class="team-name"><a href="https://rating.chgk.info/player/21952" target="_blank" class="entity-link">Павел Муха</a></td><td class="score">2</td><td class="score">2</td><td><span class="year-tag">🥇2018</span> <span class="year-tag">🥇2023</span></td></tr>
+<tr class="filterable" data-section="pp-o" data-years="2025,2026"><td class="pos">11</td><td class="team-name"><a href="https://rating.chgk.info/player/169839" target="_blank" class="entity-link">Дмитрий Панкратов</a></td><td class="score">2</td><td class="score">2</td><td><span class="year-tag">🥇2025</span> <span class="year-tag">🥇2026</span></td></tr>
+<tr class="filterable" data-section="pp-o" data-years="2025,2026"><td class="pos">12</td><td class="team-name"><a href="https://rating.chgk.info/player/81677" target="_blank" class="entity-link">Олег Богомолов</a></td><td class="score">2</td><td class="score">2</td><td><span class="year-tag">🥇2025</span> <span class="year-tag">🥇2026</span></td></tr>
+<tr class="filterable" data-section="pp-o" data-years="2025,2026"><td class="pos">13</td><td class="team-name"><a href="https://rating.chgk.info/player/4223" target="_blank" class="entity-link">Константин Бриф</a></td><td class="score">2</td><td class="score">2</td><td><span class="year-tag">🥇2025</span> <span class="year-tag">🥇2026</span></td></tr>
+<tr class="filterable" data-section="pp-o" data-years="2018,2022"><td class="pos">14</td><td class="team-name"><a href="https://rating.chgk.info/player/101864" target="_blank" class="entity-link">Елизавета Лысенко</a></td><td class="score">2</td><td class="score">1</td><td><span class="year-tag">🥉2018</span> <span class="year-tag">🥇2022</span></td></tr>
+<tr class="filterable" data-section="pp-o" data-years="2019,2023"><td class="pos">15</td><td class="team-name"><a href="https://rating.chgk.info/player/138163" target="_blank" class="entity-link">Айгуль Сембаева</a></td><td class="score">2</td><td class="score">1</td><td><span class="year-tag">🥇2019</span> <span class="year-tag">🥉2023</span></td></tr>
+<tr class="filterable" data-section="pp-o" data-years="2019,2023"><td class="pos">16</td><td class="team-name"><a href="https://rating.chgk.info/player/130795" target="_blank" class="entity-link">Александр Шелёмин</a></td><td class="score">2</td><td class="score">1</td><td><span class="year-tag">🥇2019</span> <span class="year-tag">🥉2023</span></td></tr>
+<tr class="filterable" data-section="pp-o" data-years="2019,2023"><td class="pos">17</td><td class="team-name"><a href="https://rating.chgk.info/player/117140" target="_blank" class="entity-link">Денис Руденко</a></td><td class="score">2</td><td class="score">1</td><td><span class="year-tag">🥇2019</span> <span class="year-tag">🥉2023</span></td></tr>
+<tr class="filterable" data-section="pp-o" data-years="2019,2023"><td class="pos">18</td><td class="team-name"><a href="https://rating.chgk.info/player/23487" target="_blank" class="entity-link">Илья Онскуль</a></td><td class="score">2</td><td class="score">1</td><td><span class="year-tag">🥇2019</span> <span class="year-tag">🥉2023</span></td></tr>
+<tr class="filterable" data-section="pp-o" data-years="2019,2023"><td class="pos">19</td><td class="team-name"><a href="https://rating.chgk.info/player/10910" target="_blank" class="entity-link">Алексей Жилинский</a></td><td class="score">2</td><td class="score">1</td><td><span class="year-tag">🥇2019</span> <span class="year-tag">🥉2023</span></td></tr>
+<tr class="filterable" data-section="pp-o" data-years="2022,2025"><td class="pos">20</td><td class="team-name"><a href="https://rating.chgk.info/player/69720" target="_blank" class="entity-link">Максим Галкин</a></td><td class="score">2</td><td class="score">1</td><td><span class="year-tag">🥇2022</span> <span class="year-tag">🥉2025</span></td></tr>
+<tr class="filterable" data-section="pp-o" data-years="2022,2024"><td class="pos">21</td><td class="team-name"><a href="https://rating.chgk.info/player/28656" target="_blank" class="entity-link">Валерий Семёнов</a></td><td class="score">2</td><td class="score">1</td><td><span class="year-tag">🥉2022</span> <span class="year-tag">🥇2024</span></td></tr>
+<tr class="filterable" data-section="pp-o" data-years="2022,2024"><td class="pos">22</td><td class="team-name"><a href="https://rating.chgk.info/player/18168" target="_blank" class="entity-link">Надежда Лейчинская</a></td><td class="score">2</td><td class="score">1</td><td><span class="year-tag">🥉2022</span> <span class="year-tag">🥇2024</span></td></tr>
+<tr class="filterable" data-section="pp-o" data-years="2018,2019"><td class="pos">23</td><td class="team-name"><a href="https://rating.chgk.info/player/40390" target="_blank" class="entity-link">Елена Гордынец</a></td><td class="score">2</td><td class="score">0</td><td><span class="year-tag">🥈2018</span> <span class="year-tag">🥉2019</span></td></tr>
+<tr class="filterable" data-section="pp-o" data-years="2018,2019"><td class="pos">24</td><td class="team-name"><a href="https://rating.chgk.info/player/17121" target="_blank" class="entity-link">Владимир Кукарских</a></td><td class="score">2</td><td class="score">0</td><td><span class="year-tag">🥈2018</span> <span class="year-tag">🥉2019</span></td></tr>
+<tr class="filterable" data-section="pp-o" data-years="2018,2019"><td class="pos">25</td><td class="team-name"><a href="https://rating.chgk.info/player/74382" target="_blank" class="entity-link">Михаил Новосёлов</a></td><td class="score">2</td><td class="score">0</td><td><span class="year-tag">🥉2018</span> <span class="year-tag">🥈2019</span></td></tr>
+<tr class="filterable" data-section="pp-o" data-years="2018,2019"><td class="pos">26</td><td class="team-name"><a href="https://rating.chgk.info/player/36592" target="_blank" class="entity-link">Алексей Штых</a></td><td class="score">2</td><td class="score">0</td><td><span class="year-tag">🥉2018</span> <span class="year-tag">🥈2019</span></td></tr>
+<tr class="filterable" data-section="pp-o" data-years="2018,2019"><td class="pos">27</td><td class="team-name"><a href="https://rating.chgk.info/player/26911" target="_blank" class="entity-link">Александр Фингеров</a></td><td class="score">2</td><td class="score">0</td><td><span class="year-tag">🥉2018</span> <span class="year-tag">🥈2019</span></td></tr>
+<tr class="filterable" data-section="pp-o" data-years="2023,2026"><td class="pos">28</td><td class="team-name"><a href="https://rating.chgk.info/player/37259" target="_blank" class="entity-link">Юрий Яковлев</a></td><td class="score">2</td><td class="score">0</td><td><span class="year-tag">🥈2023</span> <span class="year-tag">🥉2026</span></td></tr>
+<tr class="filterable" data-section="pp-o" data-years="2023,2025"><td class="pos">29</td><td class="team-name"><a href="https://rating.chgk.info/player/35861" target="_blank" class="entity-link">Дарья Соловей</a></td><td class="score">2</td><td class="score">0</td><td><span class="year-tag">🥈2023</span> <span class="year-tag">🥈2025</span></td></tr>
+</tbody></table></div>
+<div class="card"><h2>Игроки -- участия</h2>
+<div class="year-filter" id="yf-pt"><button class="yfp" data-section="pt" data-year="all" onclick="filterYear(this)">Все</button><button class="yfp" data-section="pt" data-year="2018" onclick="filterYear(this)">2018</button><button class="yfp" data-section="pt" data-year="2019" onclick="filterYear(this)">2019</button><button class="yfp" data-section="pt" data-year="2022" onclick="filterYear(this)">2022</button><button class="yfp" data-section="pt" data-year="2023" onclick="filterYear(this)">2023</button><button class="yfp" data-section="pt" data-year="2024" onclick="filterYear(this)">2024</button><button class="yfp" data-section="pt" data-year="2025" onclick="filterYear(this)">2025</button><button class="yfp" data-section="pt" data-year="2026" onclick="filterYear(this)">2026</button></div>
+<table><thead><tr><th>#</th><th>Игрок</th><th>Турниров</th><th>Годы</th></tr></thead><tbody>
+<tr class="filterable" data-section="pt" data-years="2018,2019,2022,2023,2024,2025,2026"><td class="pos">1</td><td class="team-name"><a href="https://rating.chgk.info/player/9105" target="_blank" class="entity-link">Сергей Демяненко</a></td><td class="score">7</td><td><span class="year-tag">2018</span> <span class="year-tag">2019</span> <span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2018,2019,2022,2023,2024,2025,2026"><td class="pos">2</td><td class="team-name"><a href="https://rating.chgk.info/player/5611" target="_blank" class="entity-link">Алексей Винокуров</a></td><td class="score">7</td><td><span class="year-tag">2018</span> <span class="year-tag">2019</span> <span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2018,2019,2022,2023,2024,2025,2026"><td class="pos">3</td><td class="team-name"><a href="https://rating.chgk.info/player/151598" target="_blank" class="entity-link">Александр Галкин</a></td><td class="score">7</td><td><span class="year-tag">2018</span> <span class="year-tag">2019</span> <span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2018,2019,2022,2023,2024,2025,2026"><td class="pos">4</td><td class="team-name"><a href="https://rating.chgk.info/player/162806" target="_blank" class="entity-link">Алексей Ковтун</a></td><td class="score">7</td><td><span class="year-tag">2018</span> <span class="year-tag">2019</span> <span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2018,2019,2022,2023,2024,2025,2026"><td class="pos">5</td><td class="team-name"><a href="https://rating.chgk.info/player/40108" target="_blank" class="entity-link">Дмитрий Сарначёв</a></td><td class="score">7</td><td><span class="year-tag">2018</span> <span class="year-tag">2019</span> <span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2018,2019,2022,2023,2024,2025,2026"><td class="pos">6</td><td class="team-name"><a href="https://rating.chgk.info/player/158938" target="_blank" class="entity-link">Никита Коломиец</a></td><td class="score">7</td><td><span class="year-tag">2018</span> <span class="year-tag">2019</span> <span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2018,2022,2023,2024,2025,2026"><td class="pos">7</td><td class="team-name"><a href="https://rating.chgk.info/player/29516" target="_blank" class="entity-link">Дмитрий Слободянюк</a></td><td class="score">6</td><td><span class="year-tag">2018</span> <span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2018,2019,2022,2023,2024,2025"><td class="pos">8</td><td class="team-name"><a href="https://rating.chgk.info/player/856" target="_blank" class="entity-link">Теймур Алиев</a></td><td class="score">6</td><td><span class="year-tag">2018</span> <span class="year-tag">2019</span> <span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2018,2019,2022,2024,2025,2026"><td class="pos">9</td><td class="team-name"><a href="https://rating.chgk.info/player/10964" target="_blank" class="entity-link">Александр Жорняк</a></td><td class="score">6</td><td><span class="year-tag">2018</span> <span class="year-tag">2019</span> <span class="year-tag">2022</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2018,2022,2023,2024,2025,2026"><td class="pos">10</td><td class="team-name"><a href="https://rating.chgk.info/player/2027" target="_blank" class="entity-link">Дмитрий Багенский</a></td><td class="score">6</td><td><span class="year-tag">2018</span> <span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2018,2019,2022,2024,2025,2026"><td class="pos">11</td><td class="team-name"><a href="https://rating.chgk.info/player/128495" target="_blank" class="entity-link">Лукаш Григорович</a></td><td class="score">6</td><td><span class="year-tag">2018</span> <span class="year-tag">2019</span> <span class="year-tag">2022</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2018,2019,2022,2024,2025,2026"><td class="pos">12</td><td class="team-name"><a href="https://rating.chgk.info/player/881" target="_blank" class="entity-link">Денис Алимов</a></td><td class="score">6</td><td><span class="year-tag">2018</span> <span class="year-tag">2019</span> <span class="year-tag">2022</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2018,2022,2023,2024,2025,2026"><td class="pos">13</td><td class="team-name"><a href="https://rating.chgk.info/player/148388" target="_blank" class="entity-link">Татьяна Гнедова</a></td><td class="score">6</td><td><span class="year-tag">2018</span> <span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2018,2019,2022,2023,2024,2025"><td class="pos">14</td><td class="team-name"><a href="https://rating.chgk.info/player/170921" target="_blank" class="entity-link">Денис Гученко</a></td><td class="score">6</td><td><span class="year-tag">2018</span> <span class="year-tag">2019</span> <span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2018,2019,2022,2023,2024,2026"><td class="pos">15</td><td class="team-name"><a href="https://rating.chgk.info/player/99197" target="_blank" class="entity-link">Тимур Носик</a></td><td class="score">6</td><td><span class="year-tag">2018</span> <span class="year-tag">2019</span> <span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2019,2022,2023,2024,2025,2026"><td class="pos">16</td><td class="team-name"><a href="https://rating.chgk.info/player/40393" target="_blank" class="entity-link">Юрий Разумов</a></td><td class="score">6</td><td><span class="year-tag">2019</span> <span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2019,2022,2023,2024,2025,2026"><td class="pos">17</td><td class="team-name"><a href="https://rating.chgk.info/player/129641" target="_blank" class="entity-link">Кирилл Кахнович</a></td><td class="score">6</td><td><span class="year-tag">2019</span> <span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2019,2022,2023,2024,2025,2026"><td class="pos">18</td><td class="team-name"><a href="https://rating.chgk.info/player/128490" target="_blank" class="entity-link">Павел Чиж</a></td><td class="score">6</td><td><span class="year-tag">2019</span> <span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2018,2022,2023,2024,2026"><td class="pos">19</td><td class="team-name"><a href="https://rating.chgk.info/player/78753" target="_blank" class="entity-link">Антон Леоник</a></td><td class="score">5</td><td><span class="year-tag">2018</span> <span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2018,2019,2023,2024,2025"><td class="pos">20</td><td class="team-name"><a href="https://rating.chgk.info/player/40366" target="_blank" class="entity-link">Александр Лапко</a></td><td class="score">5</td><td><span class="year-tag">2018</span> <span class="year-tag">2019</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2018,2019,2022,2023,2024"><td class="pos">21</td><td class="team-name"><a href="https://rating.chgk.info/player/11522" target="_blank" class="entity-link">Елена Захарова</a></td><td class="score">5</td><td><span class="year-tag">2018</span> <span class="year-tag">2019</span> <span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2018,2019,2022,2024,2026"><td class="pos">22</td><td class="team-name"><a href="https://rating.chgk.info/player/22494" target="_blank" class="entity-link">Наталия Ненашева</a></td><td class="score">5</td><td><span class="year-tag">2018</span> <span class="year-tag">2019</span> <span class="year-tag">2022</span> <span class="year-tag">2024</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2018,2019,2022,2024,2026"><td class="pos">23</td><td class="team-name"><a href="https://rating.chgk.info/player/22491" target="_blank" class="entity-link">Артём Ненашев</a></td><td class="score">5</td><td><span class="year-tag">2018</span> <span class="year-tag">2019</span> <span class="year-tag">2022</span> <span class="year-tag">2024</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2018,2019,2022,2023,2026"><td class="pos">24</td><td class="team-name"><a href="https://rating.chgk.info/player/147750" target="_blank" class="entity-link">Олег Волков</a></td><td class="score">5</td><td><span class="year-tag">2018</span> <span class="year-tag">2019</span> <span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2018,2019,2023,2025,2026"><td class="pos">25</td><td class="team-name"><a href="https://rating.chgk.info/player/21006" target="_blank" class="entity-link">Павел Миронов</a></td><td class="score">5</td><td><span class="year-tag">2018</span> <span class="year-tag">2019</span> <span class="year-tag">2023</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2018,2019,2023,2024,2025"><td class="pos">26</td><td class="team-name"><a href="https://rating.chgk.info/player/147205" target="_blank" class="entity-link">Андрей Ярковой</a></td><td class="score">5</td><td><span class="year-tag">2018</span> <span class="year-tag">2019</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2018,2022,2023,2025,2026"><td class="pos">27</td><td class="team-name"><a href="https://rating.chgk.info/player/142414" target="_blank" class="entity-link">Александр Пышко</a></td><td class="score">5</td><td><span class="year-tag">2018</span> <span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2018,2019,2022,2023,2024"><td class="pos">28</td><td class="team-name"><a href="https://rating.chgk.info/player/124364" target="_blank" class="entity-link">Анна Бедюк</a></td><td class="score">5</td><td><span class="year-tag">2018</span> <span class="year-tag">2019</span> <span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2019,2022,2023,2025,2026"><td class="pos">29</td><td class="team-name"><a href="https://rating.chgk.info/player/63339" target="_blank" class="entity-link">Оксана Бандура</a></td><td class="score">5</td><td><span class="year-tag">2019</span> <span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="pt" data-years="2019,2022,2023,2025,2026"><td class="pos">30</td><td class="team-name"><a href="https://rating.chgk.info/player/20287" target="_blank" class="entity-link">Артём Матухно</a></td><td class="score">5</td><td><span class="year-tag">2019</span> <span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+</tbody></table></div></section>
+<section id="ironmen"><div class="card"><h2>🦾 Железные люди -- все 7 чемпионатов</h2>
+<p style="color:var(--text-muted);margin-bottom:12px">Игроки, которые участвовали в каждом чемпионате Польши</p>
+<table><thead><tr><th>#</th><th>Игрок</th><th>Турниров</th></tr></thead><tbody>
+<tr><td class="pos">1</td><td class="team-name"><a href="https://rating.chgk.info/player/9105" target="_blank" class="entity-link">Сергей Демяненко</a> <span class="iron-badge">IRON</span></td><td class="score">7</td></tr>
+<tr><td class="pos">2</td><td class="team-name"><a href="https://rating.chgk.info/player/5611" target="_blank" class="entity-link">Алексей Винокуров</a> <span class="iron-badge">IRON</span></td><td class="score">7</td></tr>
+<tr><td class="pos">3</td><td class="team-name"><a href="https://rating.chgk.info/player/151598" target="_blank" class="entity-link">Александр Галкин</a> <span class="iron-badge">IRON</span></td><td class="score">7</td></tr>
+<tr><td class="pos">4</td><td class="team-name"><a href="https://rating.chgk.info/player/162806" target="_blank" class="entity-link">Алексей Ковтун</a> <span class="iron-badge">IRON</span></td><td class="score">7</td></tr>
+<tr><td class="pos">5</td><td class="team-name"><a href="https://rating.chgk.info/player/40108" target="_blank" class="entity-link">Дмитрий Сарначёв</a> <span class="iron-badge">IRON</span></td><td class="score">7</td></tr>
+<tr><td class="pos">6</td><td class="team-name"><a href="https://rating.chgk.info/player/158938" target="_blank" class="entity-link">Никита Коломиец</a> <span class="iron-badge">IRON</span></td><td class="score">7</td></tr>
+</tbody></table></div></section>
+<section id="teams"><div class="card country-only"><h2>Команды -- победы (зачёт ЧС)</h2>
+<div class="bar-row"><div class="bar-label"><a href="https://rating.chgk.info/teams/85064" target="_blank" class="entity-link">Кринж без выходных</a></div><div class="bar-track"><div class="bar" style="width:100.0%;background:#02e2ac"></div></div><div class="bar-value">3</div></div>
+<div class="bar-row"><div class="bar-label"><a href="https://rating.chgk.info/teams/56081" target="_blank" class="entity-link">Глеб Шишкин</a></div><div class="bar-track"><div class="bar" style="width:66.66666666666666%;background:#02e2ac"></div></div><div class="bar-value">2</div></div>
+<div class="bar-row"><div class="bar-label"><a href="https://rating.chgk.info/teams/77174" target="_blank" class="entity-link">Polish Space Marines</a></div><div class="bar-track"><div class="bar" style="width:33.33333333333333%;background:#02e2ac"></div></div><div class="bar-value">1</div></div>
+</div>
+<div class="card overall-only"><h2>Команды -- победы (общий зачёт)</h2>
+<div class="bar-row"><div class="bar-label"><a href="https://rating.chgk.info/teams/99764" target="_blank" class="entity-link">Одинокие ковбои</a></div><div class="bar-track"><div class="bar" style="width:100.0%;background:#02e2ac"></div></div><div class="bar-value">2</div></div>
+<div class="bar-row"><div class="bar-label"><a href="https://rating.chgk.info/teams/308" target="_blank" class="entity-link">Номер 6</a></div><div class="bar-track"><div class="bar" style="width:50.0%;background:#02e2ac"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row"><div class="bar-label"><a href="https://rating.chgk.info/teams/65268" target="_blank" class="entity-link">В гостях у Кафки</a></div><div class="bar-track"><div class="bar" style="width:50.0%;background:#02e2ac"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row"><div class="bar-label"><a href="https://rating.chgk.info/teams/87450" target="_blank" class="entity-link">Молодой медведь гуляет по лесу и лакомится ветками</a></div><div class="bar-track"><div class="bar" style="width:50.0%;background:#02e2ac"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row"><div class="bar-label"><a href="https://rating.chgk.info/teams/85064" target="_blank" class="entity-link">Кринж без выходных</a></div><div class="bar-track"><div class="bar" style="width:50.0%;background:#02e2ac"></div></div><div class="bar-value">1</div></div>
+<div class="bar-row"><div class="bar-label"><a href="https://rating.chgk.info/teams/77174" target="_blank" class="entity-link">Polish Space Marines</a></div><div class="bar-track"><div class="bar" style="width:50.0%;background:#02e2ac"></div></div><div class="bar-value">1</div></div>
+</div>
+<div class="card"><h2>Команды -- участия</h2>
+<div class="year-filter" id="yf-tp"><button class="yfp" data-section="tp" data-year="all" onclick="filterYear(this)">Все</button><button class="yfp" data-section="tp" data-year="2018" onclick="filterYear(this)">2018</button><button class="yfp" data-section="tp" data-year="2019" onclick="filterYear(this)">2019</button><button class="yfp" data-section="tp" data-year="2022" onclick="filterYear(this)">2022</button><button class="yfp" data-section="tp" data-year="2023" onclick="filterYear(this)">2023</button><button class="yfp" data-section="tp" data-year="2024" onclick="filterYear(this)">2024</button><button class="yfp" data-section="tp" data-year="2025" onclick="filterYear(this)">2025</button><button class="yfp" data-section="tp" data-year="2026" onclick="filterYear(this)">2026</button></div>
+<table><thead><tr><th>#</th><th>Команда</th><th>Турниров</th><th>Годы</th></tr></thead><tbody>
+<tr class="filterable" data-section="tp" data-years="2018,2019,2022,2023,2024,2025,2026"><td class="pos">1</td><td class="team-name"><a href="https://rating.chgk.info/teams/63220" target="_blank" class="entity-link">Бесславные краснолюдки</a></td><td class="score">7</td><td><span class="year-tag">2018</span> <span class="year-tag">2019</span> <span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="tp" data-years="2018,2019,2022,2023,2024,2025"><td class="pos">2</td><td class="team-name"><a href="https://rating.chgk.info/teams/58672" target="_blank" class="entity-link">WarSowiak</a></td><td class="score">6</td><td><span class="year-tag">2018</span> <span class="year-tag">2019</span> <span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span></td></tr>
+<tr class="filterable" data-section="tp" data-years="2018,2019,2022,2023,2024,2026"><td class="pos">3</td><td class="team-name"><a href="https://rating.chgk.info/teams/62709" target="_blank" class="entity-link">Есть желающие</a></td><td class="score">6</td><td><span class="year-tag">2018</span> <span class="year-tag">2019</span> <span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="tp" data-years="2018,2019,2023,2024,2026"><td class="pos">4</td><td class="team-name"><a href="https://rating.chgk.info/teams/56078" target="_blank" class="entity-link">Большие люди</a></td><td class="score">5</td><td><span class="year-tag">2018</span> <span class="year-tag">2019</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="tp" data-years="2018,2019,2022,2023,2024"><td class="pos">5</td><td class="team-name"><a href="https://rating.chgk.info/teams/59269" target="_blank" class="entity-link">69/300</a></td><td class="score">5</td><td><span class="year-tag">2018</span> <span class="year-tag">2019</span> <span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span></td></tr>
+<tr class="filterable" data-section="tp" data-years="2018,2023,2024,2025,2026"><td class="pos">6</td><td class="team-name"><a href="https://rating.chgk.info/teams/56405" target="_blank" class="entity-link">Чуть-чуть не докрутили</a></td><td class="score">5</td><td><span class="year-tag">2018</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="tp" data-years="2022,2023,2024,2025,2026"><td class="pos">7</td><td class="team-name"><a href="https://rating.chgk.info/teams/85064" target="_blank" class="entity-link">Кринж без выходных</a></td><td class="score">5</td><td><span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="tp" data-years="2022,2023,2024,2025,2026"><td class="pos">8</td><td class="team-name"><a href="https://rating.chgk.info/teams/77174" target="_blank" class="entity-link">Polish Space Marines</a></td><td class="score">5</td><td><span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="tp" data-years="2022,2023,2024,2025,2026"><td class="pos">9</td><td class="team-name"><a href="https://rating.chgk.info/teams/86732" target="_blank" class="entity-link">4:20</a></td><td class="score">5</td><td><span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="tp" data-years="2022,2023,2024,2025,2026"><td class="pos">10</td><td class="team-name"><a href="https://rating.chgk.info/teams/87436" target="_blank" class="entity-link">Хождение</a></td><td class="score">5</td><td><span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="tp" data-years="2022,2023,2024,2025,2026"><td class="pos">11</td><td class="team-name"><a href="https://rating.chgk.info/teams/87467" target="_blank" class="entity-link">Гэта элементарныя рэчы</a></td><td class="score">5</td><td><span class="year-tag">2022</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="tp" data-years="2018,2023,2025,2026"><td class="pos">12</td><td class="team-name"><a href="https://rating.chgk.info/teams/4130" target="_blank" class="entity-link">Как-то так</a></td><td class="score">4</td><td><span class="year-tag">2018</span> <span class="year-tag">2023</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="tp" data-years="2018,2023,2024,2025"><td class="pos">13</td><td class="team-name"><a href="https://rating.chgk.info/teams/67074" target="_blank" class="entity-link">Чай Кава Макава</a></td><td class="score">4</td><td><span class="year-tag">2018</span> <span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span></td></tr>
+<tr class="filterable" data-section="tp" data-years="2023,2024,2025,2026"><td class="pos">14</td><td class="team-name"><a href="https://rating.chgk.info/teams/91851" target="_blank" class="entity-link">Гдыгда</a></td><td class="score">4</td><td><span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="tp" data-years="2023,2024,2025,2026"><td class="pos">15</td><td class="team-name"><a href="https://rating.chgk.info/teams/89632" target="_blank" class="entity-link">Szopy</a></td><td class="score">4</td><td><span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="tp" data-years="2023,2024,2025,2026"><td class="pos">16</td><td class="team-name"><a href="https://rating.chgk.info/teams/87688" target="_blank" class="entity-link">С нами Б-г</a></td><td class="score">4</td><td><span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="tp" data-years="2023,2024,2025,2026"><td class="pos">17</td><td class="team-name"><a href="https://rating.chgk.info/teams/90063" target="_blank" class="entity-link">Какая собака?</a></td><td class="score">4</td><td><span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="tp" data-years="2023,2024,2025,2026"><td class="pos">18</td><td class="team-name"><a href="https://rating.chgk.info/teams/91852" target="_blank" class="entity-link">Приемлемо</a></td><td class="score">4</td><td><span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="tp" data-years="2018,2019,2022"><td class="pos">19</td><td class="team-name"><a href="https://rating.chgk.info/teams/58380" target="_blank" class="entity-link">Олег с мышами</a></td><td class="score">3</td><td><span class="year-tag">2018</span> <span class="year-tag">2019</span> <span class="year-tag">2022</span></td></tr>
+<tr class="filterable" data-section="tp" data-years="2019,2023,2025"><td class="pos">20</td><td class="team-name"><a href="https://rating.chgk.info/teams/65268" target="_blank" class="entity-link">В гостях у Кафки</a></td><td class="score">3</td><td><span class="year-tag">2019</span> <span class="year-tag">2023</span> <span class="year-tag">2025</span></td></tr>
+<tr class="filterable" data-section="tp" data-years="2019,2022,2023"><td class="pos">21</td><td class="team-name"><a href="https://rating.chgk.info/teams/54152" target="_blank" class="entity-link">Пражские горцы</a></td><td class="score">3</td><td><span class="year-tag">2019</span> <span class="year-tag">2022</span> <span class="year-tag">2023</span></td></tr>
+<tr class="filterable" data-section="tp" data-years="2023,2025,2026"><td class="pos">22</td><td class="team-name"><a href="https://rating.chgk.info/teams/89616" target="_blank" class="entity-link">LTG</a></td><td class="score">3</td><td><span class="year-tag">2023</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="tp" data-years="2023,2025,2026"><td class="pos">23</td><td class="team-name"><a href="https://rating.chgk.info/teams/85037" target="_blank" class="entity-link">Странные агенты</a></td><td class="score">3</td><td><span class="year-tag">2023</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+<tr class="filterable" data-section="tp" data-years="2023,2024,2025"><td class="pos">24</td><td class="team-name"><a href="https://rating.chgk.info/teams/91855" target="_blank" class="entity-link">Zespół Kubusia Puchatka</a></td><td class="score">3</td><td><span class="year-tag">2023</span> <span class="year-tag">2024</span> <span class="year-tag">2025</span></td></tr>
+<tr class="filterable" data-section="tp" data-years="2024,2025,2026"><td class="pos">25</td><td class="team-name"><a href="https://rating.chgk.info/teams/10" target="_blank" class="entity-link">Яровит</a></td><td class="score">3</td><td><span class="year-tag">2024</span> <span class="year-tag">2025</span> <span class="year-tag">2026</span></td></tr>
+</tbody></table></div></section>
+<section id="tournaments"><div class="card"><h2>Все турниры</h2></div>
+
+<div class="card">
+  <h3><a href="https://rating.chgk.info/tournament/4853" target="_blank" class="entity-link">Открытый Чемпионат Польши 2018</a></h3>
+  <p style="color:var(--text-muted);font-size:13px">20 команд | 60 вопросов</p>
+  <table><tr><th>М</th><th>Команда</th><th>Город</th><th>Взято</th></tr>
+    <tr><td class="pos">🥇 1</td><td class="team-name"><a href="https://rating.chgk.info/teams/308" target="_blank" class="entity-link">Номер 6</a></td><td class="town">Донецк</td><td class="score">46</td></tr>
+    <tr><td class="pos">🥈 2</td><td class="team-name"><a href="https://rating.chgk.info/teams/56081" target="_blank" class="entity-link">Глеб Шишкин</a><span class="country-badge">ЧС</span></td><td class="town">Краков</td><td class="score">45</td></tr>
+    <tr><td class="pos">🥉 3</td><td class="team-name"><a href="https://rating.chgk.info/teams/45367" target="_blank" class="entity-link">Гвардия</a></td><td class="town">Пафос</td><td class="score">44</td></tr>
+    <tr><td class="pos"> 4</td><td class="team-name"><a href="https://rating.chgk.info/teams/43456" target="_blank" class="entity-link">Забобонні бонобо</a></td><td class="town">Львов</td><td class="score">39</td></tr>
+    <tr><td class="pos"> 5</td><td class="team-name"><a href="https://rating.chgk.info/teams/3639" target="_blank" class="entity-link">Західний полюс</a></td><td class="town">Тернополь</td><td class="score">38</td></tr>
+    <tr><td class="pos"> 6.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/58672" target="_blank" class="entity-link">WarSowiak</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">35</td></tr>
+    <tr><td class="pos"> 6.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/64515" target="_blank" class="entity-link">Берлин, Берлин</a></td><td class="town">Берлин</td><td class="score">35</td></tr>
+    <tr><td class="pos"> 8</td><td class="team-name"><a href="https://rating.chgk.info/teams/62709" target="_blank" class="entity-link">Есть желающие</a><span class="country-badge">ЧС</span></td><td class="town">Вроцлав</td><td class="score">34</td></tr>
+    <tr><td class="pos"> 9</td><td class="team-name"><a href="https://rating.chgk.info/teams/58077" target="_blank" class="entity-link">Команда Бората Сагдиева</a></td><td class="town">Вильнюс</td><td class="score">33</td></tr>
+    <tr><td class="pos"> 10.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/4130" target="_blank" class="entity-link">Как-то так</a></td><td class="town">Прага</td><td class="score">31</td></tr>
+    <tr><td class="pos"> 10.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/56078" target="_blank" class="entity-link">Большие люди</a><span class="country-badge">ЧС</span></td><td class="town">Краков</td><td class="score">31</td></tr>
+    <tr><td class="pos"> 12</td><td class="team-name"><a href="https://rating.chgk.info/teams/58380" target="_blank" class="entity-link">Олег с мышами</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">27</td></tr>
+    <tr><td class="pos"> 13</td><td class="team-name"><a href="https://rating.chgk.info/teams/38682" target="_blank" class="entity-link">Ведуны</a></td><td class="town">Прага</td><td class="score">25</td></tr>
+    <tr><td class="pos"> 14</td><td class="team-name"><a href="https://rating.chgk.info/teams/57317" target="_blank" class="entity-link">Прицепной Вагон</a><span class="country-badge">ЧС</span></td><td class="town">Краков</td><td class="score">23</td></tr>
+    <tr><td class="pos"> 15</td><td class="team-name"><a href="https://rating.chgk.info/teams/59269" target="_blank" class="entity-link">69/300</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">20</td></tr>
+    <tr><td class="pos"> 16</td><td class="team-name"><a href="https://rating.chgk.info/teams/64516" target="_blank" class="entity-link">Маленький запретный плот</a></td><td class="town">Гданьск</td><td class="score">18</td></tr>
+    <tr><td class="pos"> 18</td><td class="team-name"><a href="https://rating.chgk.info/teams/54043" target="_blank" class="entity-link">100 миллиметров одиночества</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">17</td></tr>
+    <tr><td class="pos"> 18</td><td class="team-name"><a href="https://rating.chgk.info/teams/56405" target="_blank" class="entity-link">Чуть-чуть не докрутили</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">17</td></tr>
+    <tr><td class="pos"> 18</td><td class="team-name"><a href="https://rating.chgk.info/teams/63220" target="_blank" class="entity-link">Бесславные краснолюдки</a><span class="country-badge">ЧС</span></td><td class="town">Вроцлав</td><td class="score">17</td></tr>
+    <tr><td class="pos"> 20</td><td class="team-name"><a href="https://rating.chgk.info/teams/67074" target="_blank" class="entity-link">Чай Кава Макава</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">15</td></tr>
+</table></div>
+
+<div class="card">
+  <h3><a href="https://rating.chgk.info/tournament/5484" target="_blank" class="entity-link">Открытый чемпионат Польши 2019</a></h3>
+  <p style="color:var(--text-muted);font-size:13px">22 команд | 75 вопросов</p>
+  <table><tr><th>М</th><th>Команда</th><th>Город</th><th>Взято</th></tr>
+    <tr><td class="pos">🥇 1</td><td class="team-name"><a href="https://rating.chgk.info/teams/65268" target="_blank" class="entity-link">В гостях у Кафки</a></td><td class="town">Прага</td><td class="score">54</td></tr>
+    <tr><td class="pos">🥈 2</td><td class="team-name"><a href="https://rating.chgk.info/teams/45367" target="_blank" class="entity-link">Гвардия</a></td><td class="town">Пафос</td><td class="score">54</td></tr>
+    <tr><td class="pos">🥉 3</td><td class="team-name"><a href="https://rating.chgk.info/teams/56081" target="_blank" class="entity-link">Глеб Шишкин</a><span class="country-badge">ЧС</span></td><td class="town">Краков</td><td class="score">52</td></tr>
+    <tr><td class="pos"> 4</td><td class="team-name"><a href="https://rating.chgk.info/teams/40904" target="_blank" class="entity-link">Кьяроскуро</a></td><td class="town">Тарту</td><td class="score">52</td></tr>
+    <tr><td class="pos"> 5</td><td class="team-name"><a href="https://rating.chgk.info/teams/50186" target="_blank" class="entity-link">Подозрительные пассажиры</a></td><td class="town">Минск</td><td class="score">46</td></tr>
+    <tr><td class="pos"> 6</td><td class="team-name"><a href="https://rating.chgk.info/teams/71340" target="_blank" class="entity-link">Сборная солянка 3</a></td><td class="town">сборная</td><td class="score">45</td></tr>
+    <tr><td class="pos"> 7</td><td class="team-name"><a href="https://rating.chgk.info/teams/493" target="_blank" class="entity-link">Beit Grand - Аборигены</a></td><td class="town">Одесса</td><td class="score">44</td></tr>
+    <tr><td class="pos"> 8</td><td class="team-name"><a href="https://rating.chgk.info/teams/50000" target="_blank" class="entity-link">Алые паруса</a></td><td class="town">Берлин</td><td class="score">42</td></tr>
+    <tr><td class="pos"> 9</td><td class="team-name"><a href="https://rating.chgk.info/teams/56078" target="_blank" class="entity-link">Большие люди</a><span class="country-badge">ЧС</span></td><td class="town">Краков</td><td class="score">39</td></tr>
+    <tr><td class="pos"> 10.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/3465" target="_blank" class="entity-link">Команда Алхазова</a></td><td class="town">Кишинёв</td><td class="score">37</td></tr>
+    <tr><td class="pos"> 10.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/62709" target="_blank" class="entity-link">Есть желающие</a><span class="country-badge">ЧС</span></td><td class="town">Вроцлав</td><td class="score">37</td></tr>
+    <tr><td class="pos"> 12</td><td class="team-name"><a href="https://rating.chgk.info/teams/54152" target="_blank" class="entity-link">Пражские горцы</a></td><td class="town">Прага</td><td class="score">36</td></tr>
+    <tr><td class="pos"> 13</td><td class="team-name"><a href="https://rating.chgk.info/teams/43456" target="_blank" class="entity-link">Забобонні бонобо</a></td><td class="town">Львов</td><td class="score">35</td></tr>
+    <tr><td class="pos"> 14</td><td class="team-name"><a href="https://rating.chgk.info/teams/58672" target="_blank" class="entity-link">WarSowiak</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">32</td></tr>
+    <tr><td class="pos"> 15</td><td class="team-name"><a href="https://rating.chgk.info/teams/58380" target="_blank" class="entity-link">Олег с мышами</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">30</td></tr>
+    <tr><td class="pos"> 16</td><td class="team-name"><a href="https://rating.chgk.info/teams/67528" target="_blank" class="entity-link">Ёжик в смоге</a><span class="country-badge">ЧС</span></td><td class="town">Краков</td><td class="score">27</td></tr>
+    <tr><td class="pos"> 17</td><td class="team-name"><a href="https://rating.chgk.info/teams/54043" target="_blank" class="entity-link">100 миллиметров одиночества</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">24</td></tr>
+    <tr><td class="pos"> 18</td><td class="team-name"><a href="https://rating.chgk.info/teams/62515" target="_blank" class="entity-link">Пираньи</a></td><td class="town">Будапешт</td><td class="score">23</td></tr>
+    <tr><td class="pos"> 19</td><td class="team-name"><a href="https://rating.chgk.info/teams/63220" target="_blank" class="entity-link">Бесславные краснолюдки</a><span class="country-badge">ЧС</span></td><td class="town">Вроцлав</td><td class="score">21</td></tr>
+    <tr><td class="pos"> 20.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/1023" target="_blank" class="entity-link">Сателлит</a></td><td class="town">Тернополь</td><td class="score">17</td></tr>
+    <tr><td class="pos"> 20.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/71337" target="_blank" class="entity-link">Данетка Оверпаком</a><span class="country-badge">ЧС</span></td><td class="town">Вроцлав</td><td class="score">17</td></tr>
+    <tr><td class="pos"> 22</td><td class="team-name"><a href="https://rating.chgk.info/teams/59269" target="_blank" class="entity-link">69/300</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">15</td></tr>
+</table></div>
+
+<div class="card">
+  <h3><a href="https://rating.chgk.info/tournament/8178" target="_blank" class="entity-link">Открытый чемпионат Польши 2022</a></h3>
+  <p style="color:var(--text-muted);font-size:13px">24 команд | 72 вопросов</p>
+  <table><tr><th>М</th><th>Команда</th><th>Город</th><th>Взято</th></tr>
+    <tr><td class="pos">🥇 1</td><td class="team-name"><a href="https://rating.chgk.info/teams/87450" target="_blank" class="entity-link">Молодой медведь гуляет по лесу и лакомится ветками</a></td><td class="town">сборная</td><td class="score">58</td></tr>
+    <tr><td class="pos">🥈 2</td><td class="team-name"><a href="https://rating.chgk.info/teams/85064" target="_blank" class="entity-link">Кринж без выходных</a></td><td class="town">Варшава</td><td class="score">52</td></tr>
+    <tr><td class="pos">🥉 3</td><td class="team-name"><a href="https://rating.chgk.info/teams/87444" target="_blank" class="entity-link">Miłość Jaksen</a></td><td class="town">сборная</td><td class="score">45</td></tr>
+    <tr><td class="pos"> 4</td><td class="team-name"><a href="https://rating.chgk.info/teams/77174" target="_blank" class="entity-link">Polish Space Marines</a><span class="country-badge">ЧС</span></td><td class="town">Краков</td><td class="score">43</td></tr>
+    <tr><td class="pos"> 5.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/55501" target="_blank" class="entity-link">Семь сорок</a></td><td class="town">Минск</td><td class="score">40</td></tr>
+    <tr><td class="pos"> 5.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/58380" target="_blank" class="entity-link">Олег с мышами</a></td><td class="town">Варшава</td><td class="score">40</td></tr>
+    <tr><td class="pos"> 7</td><td class="team-name"><a href="https://rating.chgk.info/teams/79590" target="_blank" class="entity-link">Poupas et Loupas sans Frontières</a></td><td class="town">сборная</td><td class="score">39</td></tr>
+    <tr><td class="pos"> 8.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/62709" target="_blank" class="entity-link">Есть желающие</a><span class="country-badge">ЧС</span></td><td class="town">Вроцлав</td><td class="score">37</td></tr>
+    <tr><td class="pos"> 8.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/87451" target="_blank" class="entity-link">Maybe</a></td><td class="town">сборная</td><td class="score">37</td></tr>
+    <tr><td class="pos"> 10</td><td class="team-name"><a href="https://rating.chgk.info/teams/59514" target="_blank" class="entity-link">Клёк</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">35</td></tr>
+    <tr><td class="pos"> 11</td><td class="team-name"><a href="https://rating.chgk.info/teams/86732" target="_blank" class="entity-link">4:20</a><span class="country-badge">ЧС</span></td><td class="town">Краков</td><td class="score">33</td></tr>
+    <tr><td class="pos"> 12.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/58672" target="_blank" class="entity-link">WarSowiak</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">31</td></tr>
+    <tr><td class="pos"> 12.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/86975" target="_blank" class="entity-link">LT United</a></td><td class="town">Вильнюс</td><td class="score">31</td></tr>
+    <tr><td class="pos"> 14</td><td class="team-name"><a href="https://rating.chgk.info/teams/87445" target="_blank" class="entity-link">Все на месте</a><span class="country-badge">ЧС</span></td><td class="town">сборная</td><td class="score">30</td></tr>
+    <tr><td class="pos"> 15</td><td class="team-name"><a href="https://rating.chgk.info/teams/54152" target="_blank" class="entity-link">Пражские горцы</a></td><td class="town">Прага</td><td class="score">29</td></tr>
+    <tr><td class="pos"> 16</td><td class="team-name"><a href="https://rating.chgk.info/teams/63220" target="_blank" class="entity-link">Бесславные краснолюдки</a><span class="country-badge">ЧС</span></td><td class="town">Вроцлав</td><td class="score">27</td></tr>
+    <tr><td class="pos"> 17</td><td class="team-name"><a href="https://rating.chgk.info/teams/87437" target="_blank" class="entity-link">Ватсон смог</a><span class="country-badge">ЧС</span></td><td class="town">Краков</td><td class="score">22</td></tr>
+    <tr><td class="pos"> 18.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/59269" target="_blank" class="entity-link">69/300</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">19</td></tr>
+    <tr><td class="pos"> 18.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/87435" target="_blank" class="entity-link">Буква Ю</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">19</td></tr>
+    <tr><td class="pos"> 20</td><td class="team-name"><a href="https://rating.chgk.info/teams/87436" target="_blank" class="entity-link">Хождение</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">18</td></tr>
+    <tr><td class="pos"> 21</td><td class="team-name"><a href="https://rating.chgk.info/teams/87467" target="_blank" class="entity-link">Гэта элементарныя рэчы</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">17</td></tr>
+    <tr><td class="pos"> 22</td><td class="team-name"><a href="https://rating.chgk.info/teams/87447" target="_blank" class="entity-link">Еду на Болте</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">15</td></tr>
+    <tr><td class="pos"> 23</td><td class="team-name"><a href="https://rating.chgk.info/teams/87449" target="_blank" class="entity-link">Vademecum</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">11</td></tr>
+    <tr><td class="pos"> 24</td><td class="team-name"><a href="https://rating.chgk.info/teams/87446" target="_blank" class="entity-link">РАКАМАКАФОН</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">7</td></tr>
+</table></div>
+
+<div class="card">
+  <h3><a href="https://rating.chgk.info/tournament/8661" target="_blank" class="entity-link">Открытый Чемпионат Польши - 2023 2023</a></h3>
+  <p style="color:var(--text-muted);font-size:13px">50 команд | 90 вопросов</p>
+  <table><tr><th>М</th><th>Команда</th><th>Город</th><th>Взято</th></tr>
+    <tr><td class="pos">🥇 1</td><td class="team-name"><a href="https://rating.chgk.info/teams/85064" target="_blank" class="entity-link">Кринж без выходных</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">76</td></tr>
+    <tr><td class="pos">🥈 2</td><td class="team-name"><a href="https://rating.chgk.info/teams/89887" target="_blank" class="entity-link">Игрунки</a></td><td class="town">сборная</td><td class="score">71</td></tr>
+    <tr><td class="pos">🥉 3</td><td class="team-name"><a href="https://rating.chgk.info/teams/65268" target="_blank" class="entity-link">В гостях у Кафки</a></td><td class="town">Прага</td><td class="score">68</td></tr>
+    <tr><td class="pos"> 4</td><td class="team-name"><a href="https://rating.chgk.info/teams/67678" target="_blank" class="entity-link">Котобусер Тор</a></td><td class="town">Берлин</td><td class="score">67</td></tr>
+    <tr><td class="pos"> 5</td><td class="team-name"><a href="https://rating.chgk.info/teams/87450" target="_blank" class="entity-link">Молодой медведь гуляет по лесу и лакомится ветками</a></td><td class="town">сборная</td><td class="score">66</td></tr>
+    <tr><td class="pos"> 6</td><td class="team-name"><a href="https://rating.chgk.info/teams/87766" target="_blank" class="entity-link">Это не фонтан</a></td><td class="town">сборная</td><td class="score">62</td></tr>
+    <tr><td class="pos"> 7</td><td class="team-name"><a href="https://rating.chgk.info/teams/4032" target="_blank" class="entity-link">X-promt</a></td><td class="town">Рига</td><td class="score">61</td></tr>
+    <tr><td class="pos"> 8</td><td class="team-name"><a href="https://rating.chgk.info/teams/54476" target="_blank" class="entity-link">Теория чистых ожиданий</a></td><td class="town">Рига</td><td class="score">59</td></tr>
+    <tr><td class="pos"> 9</td><td class="team-name"><a href="https://rating.chgk.info/teams/65510" target="_blank" class="entity-link">Панические атаки</a></td><td class="town">Таллинн</td><td class="score">57</td></tr>
+    <tr><td class="pos"> 10</td><td class="team-name"><a href="https://rating.chgk.info/teams/77174" target="_blank" class="entity-link">Polish Space Marines</a><span class="country-badge">ЧС</span></td><td class="town">Краков</td><td class="score">56</td></tr>
+    <tr><td class="pos"> 11</td><td class="team-name"><a href="https://rating.chgk.info/teams/89616" target="_blank" class="entity-link">LTG</a></td><td class="town">Вильнюс</td><td class="score">55</td></tr>
+    <tr><td class="pos"> 12</td><td class="team-name"><a href="https://rating.chgk.info/teams/69124" target="_blank" class="entity-link">Пятно</a></td><td class="town">Амстердам</td><td class="score">54</td></tr>
+    <tr><td class="pos"> 14</td><td class="team-name"><a href="https://rating.chgk.info/teams/5975" target="_blank" class="entity-link">Total</a></td><td class="town">Рига</td><td class="score">53</td></tr>
+    <tr><td class="pos"> 14</td><td class="team-name"><a href="https://rating.chgk.info/teams/55501" target="_blank" class="entity-link">Семь сорок</a><span class="country-badge">ЧС</span></td><td class="town">Минск</td><td class="score">53</td></tr>
+    <tr><td class="pos"> 14</td><td class="team-name"><a href="https://rating.chgk.info/teams/63470" target="_blank" class="entity-link">Весло</a></td><td class="town">Вена</td><td class="score">53</td></tr>
+    <tr><td class="pos"> 17</td><td class="team-name"><a href="https://rating.chgk.info/teams/405" target="_blank" class="entity-link">Зелёный трамвай</a></td><td class="town">Кишинёв</td><td class="score">50</td></tr>
+    <tr><td class="pos"> 17</td><td class="team-name"><a href="https://rating.chgk.info/teams/4130" target="_blank" class="entity-link">Как-то так</a></td><td class="town">Прага</td><td class="score">50</td></tr>
+    <tr><td class="pos"> 17</td><td class="team-name"><a href="https://rating.chgk.info/teams/63220" target="_blank" class="entity-link">Бесславные краснолюдки</a><span class="country-badge">ЧС</span></td><td class="town">Вроцлав</td><td class="score">50</td></tr>
+    <tr><td class="pos"> 19</td><td class="team-name"><a href="https://rating.chgk.info/teams/77689" target="_blank" class="entity-link">Кортизолушка</a></td><td class="town">Берлин</td><td class="score">49</td></tr>
+    <tr><td class="pos"> 20</td><td class="team-name"><a href="https://rating.chgk.info/teams/91851" target="_blank" class="entity-link">Гдыгда</a><span class="country-badge">ЧС</span></td><td class="town">сборная</td><td class="score">48</td></tr>
+    <tr><td class="pos"> 22</td><td class="team-name"><a href="https://rating.chgk.info/teams/47306" target="_blank" class="entity-link">Quizofrenics</a></td><td class="town">Копенгаген</td><td class="score">47</td></tr>
+    <tr><td class="pos"> 22</td><td class="team-name"><a href="https://rating.chgk.info/teams/78405" target="_blank" class="entity-link">31-й пациент</a></td><td class="town">Рига</td><td class="score">47</td></tr>
+    <tr><td class="pos"> 22</td><td class="team-name"><a href="https://rating.chgk.info/teams/90964" target="_blank" class="entity-link">sample text</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">47</td></tr>
+    <tr><td class="pos"> 25.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/58672" target="_blank" class="entity-link">WarSowiak</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">46</td></tr>
+    <tr><td class="pos"> 25.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/67674" target="_blank" class="entity-link">GOL</a></td><td class="town">Одесса</td><td class="score">46</td></tr>
+    <tr><td class="pos"> 25.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/85037" target="_blank" class="entity-link">Странные агенты</a></td><td class="town">Берлин</td><td class="score">46</td></tr>
+    <tr><td class="pos"> 25.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/86732" target="_blank" class="entity-link">4:20</a><span class="country-badge">ЧС</span></td><td class="town">Краков</td><td class="score">46</td></tr>
+    <tr><td class="pos"> 29</td><td class="team-name"><a href="https://rating.chgk.info/teams/61257" target="_blank" class="entity-link">Ахиллесова Пьета</a></td><td class="town">Лондон</td><td class="score">44</td></tr>
+    <tr><td class="pos"> 29</td><td class="team-name"><a href="https://rating.chgk.info/teams/62709" target="_blank" class="entity-link">Есть желающие</a><span class="country-badge">ЧС</span></td><td class="town">Вроцлав</td><td class="score">44</td></tr>
+    <tr><td class="pos"> 29</td><td class="team-name"><a href="https://rating.chgk.info/teams/91853" target="_blank" class="entity-link">Неглинка</a></td><td class="town">сборная</td><td class="score">44</td></tr>
+    <tr><td class="pos"> 32</td><td class="team-name"><a href="https://rating.chgk.info/teams/54152" target="_blank" class="entity-link">Пражские горцы</a></td><td class="town">Прага</td><td class="score">42</td></tr>
+    <tr><td class="pos"> 32</td><td class="team-name"><a href="https://rating.chgk.info/teams/87270" target="_blank" class="entity-link">Шунра яда</a></td><td class="town">сборная</td><td class="score">42</td></tr>
+    <tr><td class="pos"> 32</td><td class="team-name"><a href="https://rating.chgk.info/teams/89632" target="_blank" class="entity-link">Szopy</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">42</td></tr>
+    <tr><td class="pos"> 34.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/3950" target="_blank" class="entity-link">Мы-6</a></td><td class="town">Хельсинки</td><td class="score">41</td></tr>
+    <tr><td class="pos"> 34.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/55486" target="_blank" class="entity-link">Два слова на букву К</a></td><td class="town">Мёрфельден-Вальдорф</td><td class="score">41</td></tr>
+    <tr><td class="pos"> 36</td><td class="team-name"><a href="https://rating.chgk.info/teams/53559" target="_blank" class="entity-link">Фантомас разбушевался</a></td><td class="town">Париж</td><td class="score">40</td></tr>
+    <tr><td class="pos"> 37.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/87688" target="_blank" class="entity-link">С нами Б-г</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">39</td></tr>
+    <tr><td class="pos"> 37.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/90063" target="_blank" class="entity-link">Какая собака?</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">39</td></tr>
+    <tr><td class="pos"> 39</td><td class="team-name"><a href="https://rating.chgk.info/teams/67074" target="_blank" class="entity-link">Чай Кава Макава</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">36</td></tr>
+    <tr><td class="pos"> 40.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/87436" target="_blank" class="entity-link">Хождение</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">34</td></tr>
+    <tr><td class="pos"> 40.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/87467" target="_blank" class="entity-link">Гэта элементарныя рэчы</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">34</td></tr>
+    <tr><td class="pos"> 42</td><td class="team-name"><a href="https://rating.chgk.info/teams/91855" target="_blank" class="entity-link">Zespół Kubusia Puchatka</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">33</td></tr>
+    <tr><td class="pos"> 43.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/56078" target="_blank" class="entity-link">Большие люди</a><span class="country-badge">ЧС</span></td><td class="town">Краков</td><td class="score">30</td></tr>
+    <tr><td class="pos"> 43.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/91642" target="_blank" class="entity-link">Вялікі Топчы</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">30</td></tr>
+    <tr><td class="pos"> 45.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/59269" target="_blank" class="entity-link">69/300</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">27</td></tr>
+    <tr><td class="pos"> 45.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/91852" target="_blank" class="entity-link">Приемлемо</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">27</td></tr>
+    <tr><td class="pos"> 47</td><td class="team-name"><a href="https://rating.chgk.info/teams/87445" target="_blank" class="entity-link">Все на месте</a><span class="country-badge">ЧС</span></td><td class="town">сборная</td><td class="score">26</td></tr>
+    <tr><td class="pos"> 48.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/48969" target="_blank" class="entity-link">Нарек</a></td><td class="town">Киев</td><td class="score">21</td></tr>
+    <tr><td class="pos"> 48.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/61448" target="_blank" class="entity-link">Свинья-скопец</a></td><td class="town">Минск</td><td class="score">21</td></tr>
+    <tr><td class="pos"> 50</td><td class="team-name"><a href="https://rating.chgk.info/teams/56405" target="_blank" class="entity-link">Чуть-чуть не докрутили</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">18</td></tr>
+</table></div>
+
+<div class="card">
+  <h3><a href="https://rating.chgk.info/tournament/10468" target="_blank" class="entity-link">V Чемпионат Польши по интеллектуальным играм 2024</a></h3>
+  <p style="color:var(--text-muted);font-size:13px">28 команд | 90 вопросов</p>
+  <table><tr><th>М</th><th>Команда</th><th>Город</th><th>Взято</th></tr>
+    <tr><td class="pos">🥇 1</td><td class="team-name"><a href="https://rating.chgk.info/teams/77174" target="_blank" class="entity-link">Polish Space Marines</a></td><td class="town">Краков</td><td class="score">63</td></tr>
+    <tr><td class="pos">🥈 2</td><td class="team-name"><a href="https://rating.chgk.info/teams/85064" target="_blank" class="entity-link">Кринж без выходных</a></td><td class="town">Варшава</td><td class="score">59</td></tr>
+    <tr><td class="pos">🥉 3</td><td class="team-name"><a href="https://rating.chgk.info/teams/58672" target="_blank" class="entity-link">WarSowiak</a></td><td class="town">Варшава</td><td class="score">50</td></tr>
+    <tr><td class="pos"> 4</td><td class="team-name"><a href="https://rating.chgk.info/teams/86732" target="_blank" class="entity-link">4:20</a></td><td class="town">Краков</td><td class="score">49</td></tr>
+    <tr><td class="pos"> 5.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/10" target="_blank" class="entity-link">Яровит</a></td><td class="town">Варшава</td><td class="score">45</td></tr>
+    <tr><td class="pos"> 5.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/90063" target="_blank" class="entity-link">Какая собака?</a></td><td class="town">Варшава</td><td class="score">45</td></tr>
+    <tr><td class="pos"> 7.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/89632" target="_blank" class="entity-link">Szopy</a></td><td class="town">Варшава</td><td class="score">44</td></tr>
+    <tr><td class="pos"> 7.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/91508" target="_blank" class="entity-link">Просто чилим</a></td><td class="town">Вроцлав</td><td class="score">44</td></tr>
+    <tr><td class="pos"> 9</td><td class="team-name"><a href="https://rating.chgk.info/teams/63220" target="_blank" class="entity-link">Бесславные краснолюдки</a></td><td class="town">Вроцлав</td><td class="score">42</td></tr>
+    <tr><td class="pos"> 10.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/60717" target="_blank" class="entity-link">Ежу понятно</a></td><td class="town">Варшава</td><td class="score">41</td></tr>
+    <tr><td class="pos"> 10.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/87467" target="_blank" class="entity-link">Гэта элементарныя рэчы</a></td><td class="town">Варшава</td><td class="score">41</td></tr>
+    <tr><td class="pos"> 12</td><td class="team-name"><a href="https://rating.chgk.info/teams/56078" target="_blank" class="entity-link">Большие люди</a></td><td class="town">Краков</td><td class="score">39</td></tr>
+    <tr><td class="pos"> 13.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/67074" target="_blank" class="entity-link">Чай Кава Макава</a></td><td class="town">Варшава</td><td class="score">37</td></tr>
+    <tr><td class="pos"> 13.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/87688" target="_blank" class="entity-link">С нами Б-г</a></td><td class="town">Варшава</td><td class="score">37</td></tr>
+    <tr><td class="pos"> 15</td><td class="team-name"><a href="https://rating.chgk.info/teams/91851" target="_blank" class="entity-link">Гдыгда</a></td><td class="town">сборная</td><td class="score">36</td></tr>
+    <tr><td class="pos"> 16</td><td class="team-name"><a href="https://rating.chgk.info/teams/86769" target="_blank" class="entity-link">Самая большая лягушка</a></td><td class="town">Варшава</td><td class="score">35</td></tr>
+    <tr><td class="pos"> 17.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/87436" target="_blank" class="entity-link">Хождение</a></td><td class="town">Варшава</td><td class="score">33</td></tr>
+    <tr><td class="pos"> 17.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/90965" target="_blank" class="entity-link">Пингвины штурмуют эскалатор</a></td><td class="town">Варшава</td><td class="score">33</td></tr>
+    <tr><td class="pos"> 19</td><td class="team-name"><a href="https://rating.chgk.info/teams/62709" target="_blank" class="entity-link">Есть желающие</a></td><td class="town">Вроцлав</td><td class="score">32</td></tr>
+    <tr><td class="pos"> 20</td><td class="team-name"><a href="https://rating.chgk.info/teams/91852" target="_blank" class="entity-link">Приемлемо</a></td><td class="town">Варшава</td><td class="score">29</td></tr>
+    <tr><td class="pos"> 21</td><td class="team-name"><a href="https://rating.chgk.info/teams/70460" target="_blank" class="entity-link">Хор овец</a></td><td class="town">сборная</td><td class="score">27</td></tr>
+    <tr><td class="pos"> 22</td><td class="team-name"><a href="https://rating.chgk.info/teams/59269" target="_blank" class="entity-link">69/300</a></td><td class="town">Варшава</td><td class="score">25</td></tr>
+    <tr><td class="pos"> 24</td><td class="team-name"><a href="https://rating.chgk.info/teams/56405" target="_blank" class="entity-link">Чуть-чуть не докрутили</a></td><td class="town">Варшава</td><td class="score">24</td></tr>
+    <tr><td class="pos"> 24</td><td class="team-name"><a href="https://rating.chgk.info/teams/92154" target="_blank" class="entity-link">Твикс Пикс</a></td><td class="town">Вроцлав</td><td class="score">24</td></tr>
+    <tr><td class="pos"> 24</td><td class="team-name"><a href="https://rating.chgk.info/teams/98470" target="_blank" class="entity-link">Душный ЗОЖ</a></td><td class="town">Гданьск</td><td class="score">24</td></tr>
+    <tr><td class="pos"> 26</td><td class="team-name"><a href="https://rating.chgk.info/teams/91855" target="_blank" class="entity-link">Zespół Kubusia Puchatka</a></td><td class="town">Варшава</td><td class="score">22</td></tr>
+    <tr><td class="pos"> 27</td><td class="team-name"><a href="https://rating.chgk.info/teams/98473" target="_blank" class="entity-link">Przepraszam, jestem jabłkiem</a></td><td class="town">Варшава</td><td class="score">21</td></tr>
+    <tr><td class="pos"> 28</td><td class="team-name"><a href="https://rating.chgk.info/teams/93209" target="_blank" class="entity-link">Нас семеро, вместе с Джимом</a></td><td class="town">Варшава</td><td class="score">20</td></tr>
+</table></div>
+
+<div class="card">
+  <h3><a href="https://rating.chgk.info/tournament/11706" target="_blank" class="entity-link">Открытый Чемпионат Польши - 2025 2025</a></h3>
+  <p style="color:var(--text-muted);font-size:13px">45 команд | 105 вопросов</p>
+  <table><tr><th>М</th><th>Команда</th><th>Город</th><th>Взято</th></tr>
+    <tr><td class="pos">🥇 1</td><td class="team-name"><a href="https://rating.chgk.info/teams/99764" target="_blank" class="entity-link">Одинокие ковбои</a></td><td class="town">Хайфа</td><td class="score">74</td></tr>
+    <tr><td class="pos">🥈 2</td><td class="team-name"><a href="https://rating.chgk.info/teams/85064" target="_blank" class="entity-link">Кринж без выходных</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">69</td></tr>
+    <tr><td class="pos">🥉 3</td><td class="team-name"><a href="https://rating.chgk.info/teams/1733" target="_blank" class="entity-link">Суббота 13</a></td><td class="town">Нью-Йорк</td><td class="score">64</td></tr>
+    <tr><td class="pos"> 4</td><td class="team-name"><a href="https://rating.chgk.info/teams/26956" target="_blank" class="entity-link">Приматы</a></td><td class="town">Днепр</td><td class="score">62</td></tr>
+    <tr><td class="pos"> 5</td><td class="team-name"><a href="https://rating.chgk.info/teams/66079" target="_blank" class="entity-link">Корги-культ</a></td><td class="town">Нетания</td><td class="score">61</td></tr>
+    <tr><td class="pos"> 6</td><td class="team-name"><a href="https://rating.chgk.info/teams/89616" target="_blank" class="entity-link">LTG</a></td><td class="town">Вильнюс</td><td class="score">59</td></tr>
+    <tr><td class="pos"> 7</td><td class="team-name"><a href="https://rating.chgk.info/teams/65268" target="_blank" class="entity-link">В гостях у Кафки</a></td><td class="town">Прага</td><td class="score">57</td></tr>
+    <tr><td class="pos"> 8</td><td class="team-name"><a href="https://rating.chgk.info/teams/86732" target="_blank" class="entity-link">4:20</a><span class="country-badge">ЧС</span></td><td class="town">Краков</td><td class="score">55</td></tr>
+    <tr><td class="pos"> 9.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/4174" target="_blank" class="entity-link">Центровые</a></td><td class="town">Рига</td><td class="score">54</td></tr>
+    <tr><td class="pos"> 9.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/86769" target="_blank" class="entity-link">Самая большая лягушка</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">54</td></tr>
+    <tr><td class="pos"> 12</td><td class="team-name"><a href="https://rating.chgk.info/teams/48303" target="_blank" class="entity-link">Человек-снежинка</a></td><td class="town">Таллинн</td><td class="score">52</td></tr>
+    <tr><td class="pos"> 12</td><td class="team-name"><a href="https://rating.chgk.info/teams/77174" target="_blank" class="entity-link">Polish Space Marines</a><span class="country-badge">ЧС</span></td><td class="town">Краков</td><td class="score">52</td></tr>
+    <tr><td class="pos"> 12</td><td class="team-name"><a href="https://rating.chgk.info/teams/85037" target="_blank" class="entity-link">Странные агенты</a></td><td class="town">Берлин</td><td class="score">52</td></tr>
+    <tr><td class="pos"> 14</td><td class="team-name"><a href="https://rating.chgk.info/teams/4130" target="_blank" class="entity-link">Как-то так</a></td><td class="town">Прага</td><td class="score">48</td></tr>
+    <tr><td class="pos"> 15</td><td class="team-name"><a href="https://rating.chgk.info/teams/90063" target="_blank" class="entity-link">Какая собака?</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">47</td></tr>
+    <tr><td class="pos"> 16</td><td class="team-name"><a href="https://rating.chgk.info/teams/91508" target="_blank" class="entity-link">Просто чилим</a><span class="country-badge">ЧС</span></td><td class="town">Вроцлав</td><td class="score">46</td></tr>
+    <tr><td class="pos"> 17.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/10" target="_blank" class="entity-link">Яровит</a></td><td class="town">Варшава</td><td class="score">45</td></tr>
+    <tr><td class="pos"> 17.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/2040" target="_blank" class="entity-link">Три Икса</a></td><td class="town">Даугавпилс</td><td class="score">45</td></tr>
+    <tr><td class="pos"> 19.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/51722" target="_blank" class="entity-link">Эстонский экспресс</a></td><td class="town">Минск</td><td class="score">44</td></tr>
+    <tr><td class="pos"> 19.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/89632" target="_blank" class="entity-link">Szopy</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">44</td></tr>
+    <tr><td class="pos"> 21</td><td class="team-name"><a href="https://rating.chgk.info/teams/60717" target="_blank" class="entity-link">Ежу понятно</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">41</td></tr>
+    <tr><td class="pos"> 22.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/51996" target="_blank" class="entity-link">Немного математиков</a></td><td class="town">Одесса</td><td class="score">40</td></tr>
+    <tr><td class="pos"> 22.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/63220" target="_blank" class="entity-link">Бесславные краснолюдки</a><span class="country-badge">ЧС</span></td><td class="town">Вроцлав</td><td class="score">40</td></tr>
+    <tr><td class="pos"> 24.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/87270" target="_blank" class="entity-link">Шунра яда</a></td><td class="town">сборная</td><td class="score">39</td></tr>
+    <tr><td class="pos"> 24.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/87688" target="_blank" class="entity-link">С нами Б-г</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">39</td></tr>
+    <tr><td class="pos"> 26</td><td class="team-name"><a href="https://rating.chgk.info/teams/86108" target="_blank" class="entity-link">Mafia</a><span class="country-badge">ЧС</span></td><td class="town">Краков</td><td class="score">38</td></tr>
+    <tr><td class="pos"> 27.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/5517" target="_blank" class="entity-link">Non-Sense</a></td><td class="town">Рига</td><td class="score">37</td></tr>
+    <tr><td class="pos"> 27.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/87884" target="_blank" class="entity-link">Щодеколишні</a></td><td class="town">Киев</td><td class="score">37</td></tr>
+    <tr><td class="pos"> 30</td><td class="team-name"><a href="https://rating.chgk.info/teams/67074" target="_blank" class="entity-link">Чай Кава Макава</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">36</td></tr>
+    <tr><td class="pos"> 30</td><td class="team-name"><a href="https://rating.chgk.info/teams/87467" target="_blank" class="entity-link">Гэта элементарныя рэчы</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">36</td></tr>
+    <tr><td class="pos"> 30</td><td class="team-name"><a href="https://rating.chgk.info/teams/91851" target="_blank" class="entity-link">Гдыгда</a><span class="country-badge">ЧС</span></td><td class="town">сборная</td><td class="score">36</td></tr>
+    <tr><td class="pos"> 32</td><td class="team-name"><a href="https://rating.chgk.info/teams/101287" target="_blank" class="entity-link">Цифра 3</a></td><td class="town">Варшава</td><td class="score">35</td></tr>
+    <tr><td class="pos"> 33.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/90964" target="_blank" class="entity-link">sample text</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">32</td></tr>
+    <tr><td class="pos"> 33.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/91852" target="_blank" class="entity-link">Приемлемо</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">32</td></tr>
+    <tr><td class="pos"> 35</td><td class="team-name"><a href="https://rating.chgk.info/teams/90965" target="_blank" class="entity-link">Пингвины штурмуют эскалатор</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">30</td></tr>
+    <tr><td class="pos"> 36.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/99033" target="_blank" class="entity-link">БирШава</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">29</td></tr>
+    <tr><td class="pos"> 36.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/104068" target="_blank" class="entity-link">Тварожныя званочкі</a><span class="country-badge">ЧС</span></td><td class="town">сборная</td><td class="score">29</td></tr>
+    <tr><td class="pos"> 38</td><td class="team-name"><a href="https://rating.chgk.info/teams/58672" target="_blank" class="entity-link">WarSowiak</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">27</td></tr>
+    <tr><td class="pos"> 39</td><td class="team-name"><a href="https://rating.chgk.info/teams/70460" target="_blank" class="entity-link">Хор овец</a></td><td class="town">сборная</td><td class="score">25</td></tr>
+    <tr><td class="pos"> 40.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/87436" target="_blank" class="entity-link">Хождение</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">24</td></tr>
+    <tr><td class="pos"> 40.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/91855" target="_blank" class="entity-link">Zespół Kubusia Puchatka</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">24</td></tr>
+    <tr><td class="pos"> 42</td><td class="team-name"><a href="https://rating.chgk.info/teams/104561" target="_blank" class="entity-link">Гучыць мярзотненька</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">20</td></tr>
+    <tr><td class="pos"> 43.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/56405" target="_blank" class="entity-link">Чуть-чуть не докрутили</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">19</td></tr>
+    <tr><td class="pos"> 43.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/93209" target="_blank" class="entity-link">Нас семеро, вместе с Джимом</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">19</td></tr>
+    <tr><td class="pos"> 45</td><td class="team-name"><a href="https://rating.chgk.info/teams/101987" target="_blank" class="entity-link">Цмок па-французску</a></td><td class="town">Варшава</td><td class="score">16</td></tr>
+</table></div>
+
+<div class="card">
+  <h3><a href="https://rating.chgk.info/tournament/13180" target="_blank" class="entity-link">Открытый Чемпионат Польши — 2026 2026</a></h3>
+  <p style="color:var(--text-muted);font-size:13px">48 команд | 105 вопросов</p>
+  <table><tr><th>М</th><th>Команда</th><th>Город</th><th>Взято</th></tr>
+    <tr><td class="pos">🥇 1</td><td class="team-name"><a href="https://rating.chgk.info/teams/99764" target="_blank" class="entity-link">Одинокие ковбои</a></td><td class="town">Хайфа</td><td class="score">79</td></tr>
+    <tr><td class="pos">🥈 2</td><td class="team-name"><a href="https://rating.chgk.info/teams/98728" target="_blank" class="entity-link">На всякий случай</a></td><td class="town">сборная</td><td class="score">72</td></tr>
+    <tr><td class="pos">🥉 3</td><td class="team-name"><a href="https://rating.chgk.info/teams/85064" target="_blank" class="entity-link">Кринж без выходных</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">71</td></tr>
+    <tr><td class="pos"> 4</td><td class="team-name"><a href="https://rating.chgk.info/teams/26956" target="_blank" class="entity-link">Приматы</a></td><td class="town">Днепр</td><td class="score">71</td></tr>
+    <tr><td class="pos"> 5</td><td class="team-name"><a href="https://rating.chgk.info/teams/1733" target="_blank" class="entity-link">Суббота 13</a></td><td class="town">Нью-Йорк</td><td class="score">67</td></tr>
+    <tr><td class="pos"> 6</td><td class="team-name"><a href="https://rating.chgk.info/teams/75867" target="_blank" class="entity-link">И</a></td><td class="town">Дюссельдорф</td><td class="score">66</td></tr>
+    <tr><td class="pos"> 7</td><td class="team-name"><a href="https://rating.chgk.info/teams/4032" target="_blank" class="entity-link">X-promt</a></td><td class="town">Рига</td><td class="score">64</td></tr>
+    <tr><td class="pos"> 8.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/89616" target="_blank" class="entity-link">LTG</a></td><td class="town">Вильнюс</td><td class="score">63</td></tr>
+    <tr><td class="pos"> 8.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/91946" target="_blank" class="entity-link">Пробковый ноктурлабиум</a></td><td class="town">Хельсинки</td><td class="score">63</td></tr>
+    <tr><td class="pos"> 10</td><td class="team-name"><a href="https://rating.chgk.info/teams/77174" target="_blank" class="entity-link">Polish Space Marines</a><span class="country-badge">ЧС</span></td><td class="town">Краков</td><td class="score">62</td></tr>
+    <tr><td class="pos"> 11</td><td class="team-name"><a href="https://rating.chgk.info/teams/4174" target="_blank" class="entity-link">Центровые</a></td><td class="town">Рига</td><td class="score">60</td></tr>
+    <tr><td class="pos"> 13</td><td class="team-name"><a href="https://rating.chgk.info/teams/6178" target="_blank" class="entity-link">Карт бланш</a></td><td class="town">Кишинёв</td><td class="score">59</td></tr>
+    <tr><td class="pos"> 13</td><td class="team-name"><a href="https://rating.chgk.info/teams/68786" target="_blank" class="entity-link">Сцилла</a></td><td class="town">Берлин</td><td class="score">59</td></tr>
+    <tr><td class="pos"> 13</td><td class="team-name"><a href="https://rating.chgk.info/teams/105175" target="_blank" class="entity-link">Команда Ř</a></td><td class="town">Прага</td><td class="score">59</td></tr>
+    <tr><td class="pos"> 15</td><td class="team-name"><a href="https://rating.chgk.info/teams/107717" target="_blank" class="entity-link">РАЗЛИЧНЫЕ СУПЫ</a></td><td class="town">сборная</td><td class="score">56</td></tr>
+    <tr><td class="pos"> 17</td><td class="team-name"><a href="https://rating.chgk.info/teams/10" target="_blank" class="entity-link">Яровит</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">54</td></tr>
+    <tr><td class="pos"> 17</td><td class="team-name"><a href="https://rating.chgk.info/teams/4130" target="_blank" class="entity-link">Как-то так</a></td><td class="town">Прага</td><td class="score">54</td></tr>
+    <tr><td class="pos"> 17</td><td class="team-name"><a href="https://rating.chgk.info/teams/91508" target="_blank" class="entity-link">Просто чилим</a><span class="country-badge">ЧС</span></td><td class="town">Вроцлав</td><td class="score">54</td></tr>
+    <tr><td class="pos"> 20</td><td class="team-name"><a href="https://rating.chgk.info/teams/85037" target="_blank" class="entity-link">Странные агенты</a></td><td class="town">Берлин</td><td class="score">53</td></tr>
+    <tr><td class="pos"> 20</td><td class="team-name"><a href="https://rating.chgk.info/teams/86732" target="_blank" class="entity-link">4:20</a><span class="country-badge">ЧС</span></td><td class="town">Краков</td><td class="score">53</td></tr>
+    <tr><td class="pos"> 20</td><td class="team-name"><a href="https://rating.chgk.info/teams/107591" target="_blank" class="entity-link">Ну, хотя бы начните</a><span class="country-badge">ЧС</span></td><td class="town">сборная</td><td class="score">53</td></tr>
+    <tr><td class="pos"> 22</td><td class="team-name"><a href="https://rating.chgk.info/teams/51722" target="_blank" class="entity-link">Эстонский экспресс</a></td><td class="town">Минск</td><td class="score">52</td></tr>
+    <tr><td class="pos"> 23</td><td class="team-name"><a href="https://rating.chgk.info/teams/90063" target="_blank" class="entity-link">Какая собака?</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">50</td></tr>
+    <tr><td class="pos"> 24</td><td class="team-name"><a href="https://rating.chgk.info/teams/405" target="_blank" class="entity-link">Зелёный трамвай</a></td><td class="town">Кишинёв</td><td class="score">49</td></tr>
+    <tr><td class="pos"> 26</td><td class="team-name"><a href="https://rating.chgk.info/teams/5517" target="_blank" class="entity-link">Non-Sense</a></td><td class="town">Рига</td><td class="score">48</td></tr>
+    <tr><td class="pos"> 26</td><td class="team-name"><a href="https://rating.chgk.info/teams/60717" target="_blank" class="entity-link">Ежу понятно</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">48</td></tr>
+    <tr><td class="pos"> 26</td><td class="team-name"><a href="https://rating.chgk.info/teams/78405" target="_blank" class="entity-link">31-й пациент</a></td><td class="town">Рига</td><td class="score">48</td></tr>
+    <tr><td class="pos"> 29</td><td class="team-name"><a href="https://rating.chgk.info/teams/63220" target="_blank" class="entity-link">Бесславные краснолюдки</a><span class="country-badge">ЧС</span></td><td class="town">Вроцлав</td><td class="score">46</td></tr>
+    <tr><td class="pos"> 29</td><td class="team-name"><a href="https://rating.chgk.info/teams/86769" target="_blank" class="entity-link">Самая большая лягушка</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">46</td></tr>
+    <tr><td class="pos"> 29</td><td class="team-name"><a href="https://rating.chgk.info/teams/87688" target="_blank" class="entity-link">С нами Б-г</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">46</td></tr>
+    <tr><td class="pos"> 31</td><td class="team-name"><a href="https://rating.chgk.info/teams/91851" target="_blank" class="entity-link">Гдыгда</a><span class="country-badge">ЧС</span></td><td class="town">сборная</td><td class="score">43</td></tr>
+    <tr><td class="pos"> 33</td><td class="team-name"><a href="https://rating.chgk.info/teams/62709" target="_blank" class="entity-link">Есть желающие</a><span class="country-badge">ЧС</span></td><td class="town">Вроцлав</td><td class="score">42</td></tr>
+    <tr><td class="pos"> 33</td><td class="team-name"><a href="https://rating.chgk.info/teams/89632" target="_blank" class="entity-link">Szopy</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">42</td></tr>
+    <tr><td class="pos"> 33</td><td class="team-name"><a href="https://rating.chgk.info/teams/101287" target="_blank" class="entity-link">Цифра 3</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">42</td></tr>
+    <tr><td class="pos"> 35.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/70337" target="_blank" class="entity-link">Tamos VIP</a></td><td class="town">Алматы</td><td class="score">41</td></tr>
+    <tr><td class="pos"> 35.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/87884" target="_blank" class="entity-link">Щодеколишні</a><span class="country-badge">ЧС</span></td><td class="town">Киев</td><td class="score">41</td></tr>
+    <tr><td class="pos"> 37</td><td class="team-name"><a href="https://rating.chgk.info/teams/87436" target="_blank" class="entity-link">Хождение</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">40</td></tr>
+    <tr><td class="pos"> 38</td><td class="team-name"><a href="https://rating.chgk.info/teams/102516" target="_blank" class="entity-link">Кукла q-колдуна</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">38</td></tr>
+    <tr><td class="pos"> 39.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/86108" target="_blank" class="entity-link">Mafia</a><span class="country-badge">ЧС</span></td><td class="town">Краков</td><td class="score">37</td></tr>
+    <tr><td class="pos"> 39.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/91852" target="_blank" class="entity-link">Приемлемо</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">37</td></tr>
+    <tr><td class="pos"> 41.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/87467" target="_blank" class="entity-link">Гэта элементарныя рэчы</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">35</td></tr>
+    <tr><td class="pos"> 41.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/102296" target="_blank" class="entity-link">шустрые бланки 2.6</a><span class="country-badge">ЧС</span></td><td class="town">Краков</td><td class="score">35</td></tr>
+    <tr><td class="pos"> 43</td><td class="team-name"><a href="https://rating.chgk.info/teams/93821" target="_blank" class="entity-link">Сборная того или иного рода</a></td><td class="town">Рига</td><td class="score">33</td></tr>
+    <tr><td class="pos"> 44.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/56078" target="_blank" class="entity-link">Большие люди</a><span class="country-badge">ЧС</span></td><td class="town">Краков</td><td class="score">30</td></tr>
+    <tr><td class="pos"> 44.5</td><td class="team-name"><a href="https://rating.chgk.info/teams/99033" target="_blank" class="entity-link">БирШава</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">30</td></tr>
+    <tr><td class="pos"> 46</td><td class="team-name"><a href="https://rating.chgk.info/teams/90965" target="_blank" class="entity-link">Пингвины штурмуют эскалатор</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">29</td></tr>
+    <tr><td class="pos"> 47</td><td class="team-name"><a href="https://rating.chgk.info/teams/104086" target="_blank" class="entity-link">Внутренняя Мазовия</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">21</td></tr>
+    <tr><td class="pos"> 48</td><td class="team-name"><a href="https://rating.chgk.info/teams/56405" target="_blank" class="entity-link">Чуть-чуть не докрутили</a><span class="country-badge">ЧС</span></td><td class="town">Варшава</td><td class="score">18</td></tr>
+</table></div>
+</section>
+
+</div>
+<footer style="text-align:center;padding:40px 20px;color:var(--text-muted);font-size:13px"><a href="../index.html">← Все страны</a> | Данные: <a href="https://rating.chgk.info">rating.chgk.info</a> API | Сделано <a href="mailto:imangulovamal@gmail.com" style="color:var(--accent)">Амалем Имангуловым</a></footer>
+<script>function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+}
+(function() {
+  const s = localStorage.getItem('theme');
+  if (s) document.documentElement.setAttribute('data-theme', s);
+  document.querySelectorAll('.yfp[data-year="all"]').forEach(b => b.classList.add('active'));
+})();
+document.querySelectorAll('nav a').forEach(a => {
+  a.addEventListener('click', function() {
+    document.querySelectorAll('nav a').forEach(x => x.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+function filterYear(btn) {
+  const section = btn.dataset.section;
+  const year = btn.dataset.year;
+  document.querySelectorAll(`.yfp[data-section="${section}"]`).forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll(`.filterable[data-section="${section}"]`).forEach(row => {
+    if (year === 'all') { row.classList.remove('hidden'); }
+    else { row.classList.toggle('hidden', !row.dataset.years.split(',').includes(year)); }
+  });
+}
+function setMode(mode) {
+  document.body.setAttribute('data-mode', mode);
+  document.querySelectorAll('.mode-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === mode);
+  });
+  localStorage.setItem('viewMode', mode);
+}
+(function() {
+  const m = localStorage.getItem('viewMode') || 'country';
+  if (document.querySelector('.mode-btn')) setMode(m);
+})();
+</script>
+</body>
+</html>
