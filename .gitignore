@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+data/worldwide_results.json
+data/world_countries.geojson
+.DS_Store
