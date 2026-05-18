@@ -1,6 +1,6 @@
 # chgk_worldwide
 
-Statistics dashboard for national "What? Where? When?" (ЧГК) championships across 22 countries.
+Statistics dashboard for national "What? Where? When?" (ЧГК) championships across 25 countries.
 
 **Live site: [imangulova.github.io/chgk-worldwide](https://imangulova.github.io/chgk-worldwide/)**
 
@@ -15,7 +15,7 @@ Statistics dashboard for national "What? Where? When?" (ЧГК) championships ac
 
 ## Countries covered
 
-Azerbaijan, Armenia, Belarus, Bulgaria, Canada, Czechia, Estonia, Finland, Georgia, Germany, Israel, Kazakhstan, Kyrgyzstan, Latvia, Lithuania, Moldova, Russia, Turkmenistan, UK, Ukraine, USA, Uzbekistan
+Azerbaijan, Armenia, Belarus, Bulgaria, Canada, Cyprus, Czechia, Estonia, Finland, Georgia, Germany, Israel, Kazakhstan, Kyrgyzstan, Latvia, Lithuania, Moldova, Poland, Russia, Switzerland, Turkmenistan, UK, Ukraine, USA, Uzbekistan
 
 ## Data source
 
