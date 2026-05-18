@@ -369,6 +369,15 @@ def medal_icon(pos):
     return ""
 
 
+def tied_ranks(items, key):
+    """Yield (rank, item) with shared ranks for ties. key(item) -> sortable value."""
+    rank = 1
+    for i, item in enumerate(items):
+        if i > 0 and key(item) != key(items[i - 1]):
+            rank = i + 1
+        yield rank, item
+
+
 def bar_html(val, max_val, color="#1877F2"):
     pct = (val / max_val * 100) if max_val else 0
     return f'<div class="bar" style="width:{pct}%;background:{color}"></div>'
@@ -582,7 +591,7 @@ def build_country_page(stats, country_name, country_genitive, back_link="../inde
     h.append(f'<div class="card country-only"><h2>Игроки -- подиумы (зачёт ЧС)</h2>')
     h.append(year_filter_pills("pp-c", all_years))
     h.append('<table><thead><tr><th>#</th><th>Игрок</th><th>Подиумов</th><th>Побед</th><th>Детали</th></tr></thead><tbody>')
-    for rank, (pid, podiums) in enumerate(top_country_podiums[:30], 1):
+    for rank, (pid, podiums) in tied_ranks(top_country_podiums[:30], key=lambda x: -len(x[1])):
         if len(podiums) < 2: break
         wins = len(stats["player_wins_country"].get(pid, []))
         details = " ".join(f'<span class="year-tag">{medal_icon(p)}{y}</span>' for y, t, p in podiums)
@@ -593,7 +602,7 @@ def build_country_page(stats, country_name, country_genitive, back_link="../inde
     h.append(f'<div class="card overall-only"><h2>Игроки -- подиумы (общий зачёт)</h2>')
     h.append(year_filter_pills("pp-o", all_years))
     h.append('<table><thead><tr><th>#</th><th>Игрок</th><th>Подиумов</th><th>Побед</th><th>Детали</th></tr></thead><tbody>')
-    for rank, (pid, podiums) in enumerate(top_overall_podiums[:30], 1):
+    for rank, (pid, podiums) in tied_ranks(top_overall_podiums[:30], key=lambda x: -len(x[1])):
         if len(podiums) < 2: break
         wins = len(stats["player_wins_overall"].get(pid, []))
         details = " ".join(f'<span class="year-tag">{medal_icon(p)}{y}</span>' for y, t, p in podiums)
@@ -605,7 +614,7 @@ def build_country_page(stats, country_name, country_genitive, back_link="../inde
     h.append(year_filter_pills("pt", all_years))
     h.append('<table><thead><tr><th>#</th><th>Игрок</th><th>Турниров</th><th>Годы</th></tr></thead><tbody>')
     min_parts = max(3, len(tournaments) // 4)
-    for rank, (pid, parts) in enumerate(top_participations[:30], 1):
+    for rank, (pid, parts) in tied_ranks(top_participations[:30], key=lambda x: -len(x[1])):
         if len(parts) < min_parts: break
         yrs = sorted(set(p["year"] for p in parts))
         yrs_html = " ".join(f'<span class="year-tag">{y}</span>' for y in yrs)
@@ -640,7 +649,7 @@ def build_country_page(stats, country_name, country_genitive, back_link="../inde
     h.append(f'<div class="card"><h2>Команды -- участия</h2>')
     h.append(year_filter_pills("tp", all_years))
     h.append('<table><thead><tr><th>#</th><th>Команда</th><th>Турниров</th><th>Годы</th></tr></thead><tbody>')
-    for rank, (tn, yrs) in enumerate(top_team_parts[:25], 1):
+    for rank, (tn, yrs) in tied_ranks(top_team_parts[:25], key=lambda x: -len(set(x[1]))):
         if len(yrs) < 3: break
         unique_yrs = sorted(set(yrs))
         yrs_html = " ".join(f'<span class="year-tag">{y}</span>' for y in unique_yrs)
@@ -736,7 +745,7 @@ def build_index_page(all_country_stats, cross_stats, all_iron_men):
     pn = cross_stats["player_names"]
     h.append('<section id="travelers"><div class="card"><h2>🧳 Путешественники -- наибольшее количество стран</h2>')
     h.append('<table><thead><tr><th>#</th><th>Игрок</th><th>Стран</th><th>Страны</th></tr></thead><tbody>')
-    for rank, (pid, countries) in enumerate(cross_stats["most_countries"][:40], 1):
+    for rank, (pid, countries) in tied_ranks(cross_stats["most_countries"][:40], key=lambda x: -len(x[1])):
         if len(countries) < 3:
             break
         flags = " ".join(COUNTRY_FLAGS.get(c, "") for c in sorted(countries))
@@ -746,7 +755,7 @@ def build_index_page(all_country_stats, cross_stats, all_iron_men):
     # === MULTI-MEDALISTS ===
     h.append('<section id="multi-medalists"><div class="card"><h2>🏅 Мультимедалисты -- медали чемпионатов разных стран</h2>')
     h.append('<table><thead><tr><th>#</th><th>Игрок</th><th>Стран</th><th>Медали</th></tr></thead><tbody>')
-    for rank, (pid, countries) in enumerate(cross_stats["multi_medalists"][:40], 1):
+    for rank, (pid, countries) in tied_ranks(cross_stats["multi_medalists"][:40], key=lambda x: -len(x[1])):
         details = []
         for cname in sorted(countries.keys()):
             medals = countries[cname]
