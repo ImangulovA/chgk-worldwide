@@ -50,35 +50,35 @@ python3 fetch_worldwide.py  # скачает недостающие
 3. Скачайте данные: `python3 fetch_worldwide.py`
 4. Перегенерируйте: `python3 build_worldwide.py`
 
-## Country IDs
+## Файлы данных
 
-| ID | Страна |
-|----|--------|
-| 3 | Азербайджан |
-| 4 | Армения |
-| 5 | Беларусь |
-| 7 | Болгария |
-| 8 | Великобритания |
-| 9 | Германия |
-| 10 | Грузия |
-| 11 | Израиль |
-| 13 | Казахстан |
-| 14 | Канада |
-| 16 | Кыргызстан |
-| 17 | Латвия |
-| 18 | Литва |
-| 19 | Молдова |
-| 21 | Россия |
-| 22 | США |
-| 23 | Туркменистан |
-| 25 | Узбекистан |
-| 26 | Украина |
-| 27 | Финляндия |
-| 29 | Чехия |
-| 31 | Эстония |
-| 99 | Польша |
-| 100 | Кипр |
-| 101 | Швейцария |
+| Файл | Страна | ID в classification |
+|------|--------|---------------------|
+| `data/countries/azerbaijan.json` | Азербайджан | 3 |
+| `data/countries/armenia.json` | Армения | 4 |
+| `data/countries/belarus.json` | Беларусь | 5 |
+| `data/countries/bulgaria.json` | Болгария | 7 |
+| `data/countries/uk.json` | Великобритания | 8 |
+| `data/countries/germany.json` | Германия | 9 |
+| `data/countries/georgia.json` | Грузия | 10 |
+| `data/countries/israel.json` | Израиль | 11 |
+| `data/countries/kazakhstan.json` | Казахстан | 13 |
+| `data/countries/canada.json` | Канада | 14 |
+| `data/countries/kyrgyzstan.json` | Кыргызстан | 16 |
+| `data/countries/latvia.json` | Латвия | 17 |
+| `data/countries/lithuania.json` | Литва | 18 |
+| `data/countries/moldova.json` | Молдова | 19 |
+| `data/countries/russia.json` | Россия | 21 |
+| `data/countries/usa.json` | США | 22 |
+| `data/countries/turkmenistan.json` | Туркменистан | 23 |
+| `data/countries/uzbekistan.json` | Узбекистан | 25 |
+| `data/countries/ukraine.json` | Украина | 26 |
+| `data/countries/finland.json` | Финляндия | 27 |
+| `data/countries/czechia.json` | Чехия | 29 |
+| `data/countries/estonia.json` | Эстония | 31 |
+| `data/countries/poland.json` | Польша | 99 |
+| `data/countries/cyprus.json` | Кипр | 100 |
+| `data/countries/switzerland.json` | Швейцария | 101 |
 
 ## Как сделать PR
 

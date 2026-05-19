@@ -818,15 +818,20 @@ def build_index_page(all_country_stats, cross_stats, all_iron_men):
 
 # ─── MAIN ───
 
+SLUG_TO_CID = {v: k for k, v in COUNTRY_SLUGS.items()}
+
+
 def load_worldwide_data():
     """Load data from per-country split files, or fallback to single file."""
     split_dir = DATA_DIR / "countries"
     if split_dir.is_dir() and any(split_dir.glob("*.json")):
         worldwide = {}
         for f in sorted(split_dir.glob("*.json")):
-            cid = f.stem
+            slug = f.stem
             with open(f) as fh:
-                worldwide[cid] = json.load(fh)
+                cdata = json.load(fh)
+            cid = str(cdata["country"]["id"])
+            worldwide[cid] = cdata
         print(f"Loaded {len(worldwide)} countries from data/countries/")
         return worldwide
     with open(WORLDWIDE_DATA) as f:
