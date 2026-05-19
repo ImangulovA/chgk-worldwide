@@ -913,6 +913,23 @@ def load_worldwide_data():
                 }
                 tournaments[str(tid)] = {"info": info, "results": full_results}
 
+            dn_path = country_dir / "display_names.json"
+            if dn_path.exists():
+                dn = json.loads(dn_path.read_text())
+                team_dn = dn.get("teams", {})
+                player_dn = dn.get("players", {})
+                for td in tournaments.values():
+                    for r in td["results"]:
+                        tid_str = str(r["team"]["id"])
+                        if tid_str in team_dn:
+                            r["team"]["name"] = team_dn[tid_str]
+                        for m in r.get("teamMembers", []):
+                            pid_str = str(m["player"]["id"])
+                            if pid_str in player_dn:
+                                parts = player_dn[pid_str].rsplit(" ", 1)
+                                m["player"]["name"] = parts[0]
+                                m["player"]["surname"] = parts[1] if len(parts) > 1 else ""
+
             worldwide[cid] = {
                 "country": {"id": meta["id"], "name": meta["name"]},
                 "genitive": meta.get("genitive", meta["name"]),
