@@ -11,6 +11,7 @@ WORLDWIDE_DATA = DATA_DIR / "worldwide_results.json"
 CLASSIFICATION = DATA_DIR / "tournament_classification.json"
 
 CHST_FLAG_ID = 50
+ZACHET_OVERRIDES = DATA_DIR / "zachet_overrides.json"
 RATING = "https://rating.chgk.info"
 FOOTER_AUTHOR = 'Сделано <a href="mailto:imangulovamal@gmail.com" style="color:var(--accent)">Амалем Имангуловым</a>'
 
@@ -43,8 +44,27 @@ COUNTRY_FLAGS = {
 }
 
 
-def in_country_zachet(result, town_ids, all_results):
+_zachet_excludes = {}
+_zachet_includes = {}
+if ZACHET_OVERRIDES.exists():
+    _ov = json.loads(ZACHET_OVERRIDES.read_text())
+    _zachet_excludes = {
+        int(tid): set(team_ids)
+        for tid, team_ids in _ov.get("exclude_from_zachet", {}).items()
+    }
+    _zachet_includes = {
+        int(tid): set(team_ids)
+        for tid, team_ids in _ov.get("include_in_zachet", {}).items()
+    }
+
+
+def in_country_zachet(result, town_ids, all_results, tournament_id=None):
     team = result["team"]
+    if tournament_id:
+        if team.get("id") in _zachet_excludes.get(tournament_id, set()):
+            return False
+        if team.get("id") in _zachet_includes.get(tournament_id, set()):
+            return True
     flags = result.get("flags", [])
     flag_ids = {f["id"] for f in flags}
     has_chst_flags = any(
@@ -93,7 +113,7 @@ def compute_country_stats(country_data, main_tournament_ids):
         qd = info.get("questionQty")
         q_total = sum(qd.values()) if isinstance(qd, dict) else 0
         results.sort(key=lambda x: float(x.get("position") or 999))
-        country_results = [r for r in results if in_country_zachet(r, town_ids, results)]
+        country_results = [r for r in results if in_country_zachet(r, town_ids, results, tid)]
 
         overall_winner = results[0]["team"]["name"] if results else "?"
         country_winner = country_results[0]["team"]["name"] if country_results else "?"
@@ -116,7 +136,7 @@ def compute_country_stats(country_data, main_tournament_ids):
             town = (team.get("town") or {}).get("name", "?")
             pos = r.get("position") or 999
             total = r.get("questionsTotal") or 0
-            is_country = in_country_zachet(r, town_ids, results)
+            is_country = in_country_zachet(r, town_ids, results, tid)
             tournaments_summary[-1]["results"].append({
                 "pos": pos, "team": team["name"], "team_id": team["id"],
                 "town": town, "total": total, "is_country": is_country,
@@ -200,7 +220,7 @@ def compute_cross_country_stats(worldwide, classification):
             results = td["results"]
             results.sort(key=lambda x: float(x.get("position") or 999))
 
-            country_results = [r for r in results if in_country_zachet(r, town_ids, results)]
+            country_results = [r for r in results if in_country_zachet(r, town_ids, results, tid)]
 
             for r in results:
                 for m in r.get("teamMembers", []):

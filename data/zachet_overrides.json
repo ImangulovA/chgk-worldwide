@@ -1,0 +1,8 @@
+{
+  "exclude_from_zachet": {
+    "13612": [92213, 79988]
+  },
+  "include_in_zachet": {
+    "13612": [98778]
+  }
+}
