@@ -599,7 +599,8 @@ def build_country_page(stats, country_name, country_genitive, back_link="../inde
     max_w = len(top_country_winners[0][1]) if top_country_winners else 1
     for pid, wins in top_country_winners[:25]:
         if not wins: break
-        dyears = ",".join(sorted(set(y for y, _ in wins)))
+        podium_years = set(y for y, _, _ in stats["player_podiums_country"].get(pid, []))
+        dyears = ",".join(sorted(podium_years | set(y for y, _ in wins)))
         h.append(f'<div class="bar-row filterable" data-section="pw-c" data-years="{dyears}"><div class="bar-label">{player_link(pid, pn.get(pid, "?"))}</div><div class="bar-track">{bar_html(len(wins), max_w, "#f59e0b")}</div><div class="bar-value">{len(wins)}</div></div>')
     h.append("</div>")
 
@@ -608,7 +609,8 @@ def build_country_page(stats, country_name, country_genitive, back_link="../inde
     max_w = len(top_overall_winners[0][1]) if top_overall_winners else 1
     for pid, wins in top_overall_winners[:25]:
         if not wins: break
-        dyears = ",".join(sorted(set(y for y, _ in wins)))
+        podium_years = set(y for y, _, _ in stats["player_podiums_overall"].get(pid, []))
+        dyears = ",".join(sorted(podium_years | set(y for y, _ in wins)))
         h.append(f'<div class="bar-row filterable" data-section="pw-o" data-years="{dyears}"><div class="bar-label">{player_link(pid, pn.get(pid, "?"))}</div><div class="bar-track">{bar_html(len(wins), max_w, "#f59e0b")}</div><div class="bar-value">{len(wins)}</div></div>')
     h.append("</div>")
 
