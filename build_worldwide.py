@@ -243,7 +243,11 @@ def compute_cross_country_stats(worldwide, classification):
         (pid, countries) for pid, countries in player_country_medals.items()
         if len(countries) >= 2
     ]
-    multi_medalists.sort(key=lambda x: (-len(x[1]), -sum(len(m) for m in x[1].values())))
+    multi_medalists.sort(key=lambda x: (
+        -len(x[1]),
+        -sum(1 for c in x[1].values() if any(p == 1 for _, p in c)),
+        -sum(len(m) for m in x[1].values()),
+    ))
 
     return {
         "player_names": player_names,
@@ -774,8 +778,13 @@ def build_index_page(all_country_stats, cross_stats, all_iron_men):
 
     # === MULTI-MEDALISTS ===
     h.append('<section id="multi-medalists"><div class="card"><h2>🏅 Мультимедалисты -- медали чемпионатов разных стран</h2>')
-    h.append('<table><thead><tr><th>#</th><th>Игрок</th><th>Стран</th><th>Медали</th></tr></thead><tbody>')
-    for rank, (pid, countries) in tied_ranks(cross_stats["multi_medalists"][:40], key=lambda x: -len(x[1])):
+    h.append('<table><thead><tr><th>#</th><th>Игрок</th><th>Стран</th><th>Медалей</th><th>Детали</th></tr></thead><tbody>')
+    for rank, (pid, countries) in tied_ranks(cross_stats["multi_medalists"], key=lambda x: (
+        -len(x[1]),
+        -sum(1 for c in x[1].values() if any(p == 1 for _, p in c)),
+        -sum(len(m) for m in x[1].values()),
+    )):
+        total_medals = sum(len(m) for m in countries.values())
         details = []
         for cname in sorted(countries.keys()):
             medals = countries[cname]
@@ -788,7 +797,7 @@ def build_index_page(all_country_stats, cross_stats, all_iron_men):
             if s: parts.append(f"{s}🥈")
             if b: parts.append(f"{b}🥉")
             details.append(f'{flag}{"".join(parts)}')
-        h.append(f'<tr><td class="pos">{rank}</td><td class="team-name">{player_link(pid, pn.get(pid, "?"))}</td><td class="score">{len(countries)}</td><td>{" ".join(details)}</td></tr>')
+        h.append(f'<tr><td class="pos">{rank}</td><td class="team-name">{player_link(pid, pn.get(pid, "?"))}</td><td class="score">{len(countries)}</td><td class="score">{total_medals}</td><td>{" ".join(details)}</td></tr>')
     h.append("</tbody></table></div></section>")
 
     # === IRON MEN ===
