@@ -18,8 +18,20 @@
   "roster": []
  },
  {
+  "pos": 4.5,
+  "team_id": 308,
+  "score": 46,
+  "roster": []
+ },
+ {
+  "pos": 4.5,
+  "team_id": 54613,
+  "score": 46,
+  "roster": []
+ },
+ {
   "pos": 6.0,
-  "team_id": 965256,
+  "team_id": 26958,
   "score": 44,
   "roster": []
  },
@@ -27,6 +39,30 @@
   "pos": 7.0,
   "team_id": 8329,
   "score": 41,
+  "roster": []
+ },
+ {
+  "pos": 8.5,
+  "team_id": 959298,
+  "score": 40,
+  "roster": []
+ },
+ {
+  "pos": 8.5,
+  "team_id": 987212,
+  "score": 40,
+  "roster": []
+ },
+ {
+  "pos": 10.5,
+  "team_id": 940815,
+  "score": 38,
+  "roster": []
+ },
+ {
+  "pos": 10.5,
+  "team_id": 961103,
+  "score": 38,
   "roster": []
  },
  {
