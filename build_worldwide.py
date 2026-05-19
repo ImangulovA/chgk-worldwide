@@ -769,8 +769,8 @@ def build_index_page(all_country_stats, cross_stats, all_iron_men):
     pn = cross_stats["player_names"]
     h.append('<section id="travelers"><div class="card"><h2>🧳 Путешественники -- наибольшее количество стран</h2>')
     h.append('<table><thead><tr><th>#</th><th>Игрок</th><th>Стран</th><th>Страны</th></tr></thead><tbody>')
-    for rank, (pid, countries) in tied_ranks(cross_stats["most_countries"][:40], key=lambda x: -len(x[1])):
-        if len(countries) < 3:
+    for rank, (pid, countries) in tied_ranks(cross_stats["most_countries"], key=lambda x: -len(x[1])):
+        if len(countries) < 7:
             break
         flags = " ".join(COUNTRY_FLAGS.get(c, "") for c in sorted(countries))
         h.append(f'<tr><td class="pos">{rank}</td><td class="team-name">{player_link(pid, pn.get(pid, "?"))}</td><td class="score">{len(countries)}</td><td>{flags}</td></tr>')
