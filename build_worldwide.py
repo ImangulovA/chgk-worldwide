@@ -484,6 +484,11 @@ def build_map_svg(country_summaries):
 
 # ─── COUNTRY PAGE ───
 
+COUNTRY_SKIP_SECTIONS = {
+    "Украина": {"stats_grid", "growth", "iron_men"},
+}
+
+
 def build_country_page(stats, country_name, country_genitive, back_link="../index.html"):
     tournaments = stats["tournaments"]
     if not tournaments:
@@ -493,6 +498,7 @@ def build_country_page(stats, country_name, country_genitive, back_link="../inde
     tid_map = stats["team_name_to_id"]
     flag = COUNTRY_FLAGS.get(country_name, "🏴")
     iron_men = stats.get("iron_men", [])
+    skip = COUNTRY_SKIP_SECTIONS.get(country_name, set())
 
     all_years = sorted(set(t["year"] for t in tournaments))
     first_year = all_years[0] if all_years else "?"
@@ -515,7 +521,7 @@ def build_country_page(stats, country_name, country_genitive, back_link="../inde
     nav_items = ['<a href="#overview">Обзор</a>', '<a href="#champions">Чемпионы</a>',
                  '<a href="#players">Игроки</a>', '<a href="#teams">Команды</a>',
                  '<a href="#tournaments">Турниры</a>']
-    if iron_men:
+    if iron_men and "iron_men" not in skip:
         nav_items.insert(-1, '<a href="#ironmen">Железные люди</a>')
 
     h = []
@@ -547,22 +553,23 @@ def build_country_page(stats, country_name, country_genitive, back_link="../inde
     max_teams = max(t["teams_total"] for t in tournaments) if tournaments else 0
     max_teams_year = [t["year"] for t in tournaments if t["teams_total"] == max_teams][0] if max_teams else "?"
 
-    h.append(f"""
-<section id="overview"><div class="card">
-  <h2>Обзор</h2>
-  <div class="stats-grid">
+    h.append('\n<section id="overview"><div class="card">\n  <h2>Обзор</h2>')
+
+    if "stats_grid" not in skip:
+        h.append(f"""  <div class="stats-grid">
     <div class="stat-box"><div class="num">{len(tournaments)}</div><div class="label">турниров</div></div>
     <div class="stat-box"><div class="num">{total_players}</div><div class="label">игроков</div></div>
     <div class="stat-box"><div class="num">{total_teams}</div><div class="label">команд-участий</div></div>
     <div class="stat-box"><div class="num">{max_teams}</div><div class="label">макс. команд ({max_teams_year})</div></div>
-  </div>
-  <h3>Рост турнира</h3>""")
+  </div>""")
 
-    max_t = max(t["teams_total"] for t in tournaments) if tournaments else 1
-    for t in tournaments:
-        pct = t["teams_total"] / max_t * 100
-        c_pct = t["teams_country"] / max_t * 100
-        h.append(f"""
+    if "growth" not in skip:
+        h.append('  <h3>Рост турнира</h3>')
+        max_t = max(t["teams_total"] for t in tournaments) if tournaments else 1
+        for t in tournaments:
+            pct = t["teams_total"] / max_t * 100
+            c_pct = t["teams_country"] / max_t * 100
+            h.append(f"""
   <div class="bar-row">
     <div class="bar-label">{tournament_link(t['id'], t['year'])}</div>
     <div class="bar-track">
@@ -571,6 +578,7 @@ def build_country_page(stats, country_name, country_genitive, back_link="../inde
     </div>
     <div class="bar-value">{t['teams_total']} ({t['teams_country']} ЧС)</div>
   </div>""")
+
     h.append("</div></section>")
 
     # === CHAMPIONS ===
@@ -650,7 +658,7 @@ def build_country_page(stats, country_name, country_genitive, back_link="../inde
     h.append("</tbody></table></div></section>")
 
     # === IRON MEN ===
-    if iron_men:
+    if iron_men and "iron_men" not in skip:
         h.append(f'<section id="ironmen"><div class="card"><h2>🦾 Железные люди -- все {len(tournaments)} чемпионатов</h2>')
         h.append(f'<p style="color:var(--text-muted);margin-bottom:12px">Игроки, которые участвовали в каждом чемпионате {country_genitive}</p>')
         h.append('<table><thead><tr><th>#</th><th>Игрок</th><th>Турниров</th></tr></thead><tbody>')
