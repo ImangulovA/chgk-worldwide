@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Um, Actually -- Как внести исправления</title>
+<style>
+:root {
+  --bg: #0a0e1a; --card: #151d30; --card-border: #1e2a45;
+  --text: #e0e6f0; --text-muted: #8892a8; --accent: #1877F2;
+  --green: #02e2ac; --red: #ef4444; --gold: #f59e0b;
+}
+[data-theme="light"] {
+  --bg: #f0f2f5; --card: #ffffff; --card-border: #dde1e6;
+  --text: #1c1e21; --text-muted: #65676b; --accent: #1877F2;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+.container { max-width: 800px; margin: 0 auto; padding: 20px; }
+header { background: linear-gradient(135deg, #0a1628 0%, #162544 100%); padding: 40px 20px; text-align: center; border-bottom: 3px solid var(--accent); }
+[data-theme="light"] header { background: linear-gradient(135deg, #e8f0fe 0%, #d2e3fc 100%); }
+header h1 { font-size: 2em; margin-bottom: 8px; }
+header h1 span { color: var(--accent); }
+header p { color: var(--text-muted); font-size: 1.1em; }
+.theme-toggle { position: fixed; top: 16px; right: 16px; z-index: 100; background: var(--card); border: 1px solid var(--card-border); color: var(--text); padding: 8px 14px; border-radius: 20px; cursor: pointer; font-size: 14px; }
+.card { background: var(--card); border: 1px solid var(--card-border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+.card h2 { font-size: 1.3em; margin-bottom: 16px; color: var(--accent); }
+.card h3 { font-size: 1.1em; margin: 20px 0 8px; color: var(--gold); }
+code { background: var(--bg); padding: 2px 6px; border-radius: 4px; font-size: 0.9em; color: var(--green); }
+pre { background: var(--bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 16px; overflow-x: auto; font-size: 13px; line-height: 1.5; margin: 12px 0; }
+pre code { background: none; padding: 0; }
+a { color: var(--accent); }
+ol, ul { padding-left: 24px; margin: 8px 0; }
+li { margin: 6px 0; }
+.file-tree { font-family: monospace; font-size: 13px; line-height: 1.8; }
+.file-tree .dir { color: var(--accent); font-weight: 600; }
+.file-tree .file { color: var(--text-muted); }
+.file-tree .comment { color: var(--gold); font-style: italic; }
+.highlight { background: rgba(24, 119, 242, 0.1); border-left: 3px solid var(--accent); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 12px 0; }
+.warn { background: rgba(239, 68, 68, 0.1); border-left: 3px solid var(--red); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 12px 0; }
+footer a { color: var(--accent); }
+@media (max-width: 600px) { header h1 { font-size: 1.4em; } }
+</style>
+</head>
+<body>
+<button class="theme-toggle" onclick="toggleTheme()">🌙 / ☀️</button>
+<header>
+  <h1>☝️ <span>Um, Actually</span></h1>
+  <p>Нашли ошибку? Вот как её исправить</p>
+</header>
+<div class="container">
+
+<div class="card">
+  <h2>Зачем эта страница</h2>
+  <p>Данные на сайте собраны из <a href="https://rating.chgk.info" target="_blank">rating.chgk.info</a> API и дополнены вручную. Ошибки неизбежны: неправильное имя, не тот состав, пропущенный турнир. Если вы нашли неточность -- вы можете исправить её сами через GitHub.</p>
+  <div class="highlight">Репозиторий: <a href="https://github.com/ImangulovA/chgk-worldwide" target="_blank">github.com/ImangulovA/chgk-worldwide</a></div>
+</div>
+
+<div class="card">
+  <h2>Быстрый путь: создать Issue</h2>
+  <p>Если не хотите разбираться с кодом, просто опишите проблему:</p>
+  <ol>
+    <li>Перейдите в <a href="https://github.com/ImangulovA/chgk-worldwide/issues/new" target="_blank">Issues → New Issue</a></li>
+    <li>Напишите, что не так: страна, год, команда, что именно неправильно</li>
+    <li>Если знаете правильный вариант -- укажите его</li>
+  </ol>
+  <p>Это всё. Дальше разберёмся.</p>
+</div>
+
+<div class="card">
+  <h2>Полный путь: форк и Pull Request</h2>
+
+  <h3>1. Форкните репозиторий</h3>
+  <p>Нажмите <strong>Fork</strong> на <a href="https://github.com/ImangulovA/chgk-worldwide" target="_blank">странице репозитория</a>. Это создаст вашу копию.</p>
+
+  <h3>2. Склонируйте к себе</h3>
+  <pre><code>git clone https://github.com/YOUR_USERNAME/chgk-worldwide.git
+cd chgk-worldwide</code></pre>
+
+  <h3>3. Найдите нужный файл</h3>
+  <p>Данные лежат в <code>data/db/</code>. Структура:</p>
+  <div class="file-tree">
+    <span class="dir">data/db/</span><br>
+    ├── <span class="file">players.json</span> <span class="comment">-- все игроки: {id: "Имя Фамилия"}</span><br>
+    ├── <span class="file">teams.json</span> <span class="comment">-- все команды: {id: {name, town}}</span><br>
+    └── <span class="dir">{country}/</span> <span class="comment">-- папка страны (uk, ukraine, russia...)</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;├── <span class="file">meta.json</span> <span class="comment">-- информация о стране</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;├── <span class="file">tournaments.json</span> <span class="comment">-- список чемпионатов</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;├── <span class="file">display_names.json</span> <span class="comment">-- переопределения имён</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;└── <span class="dir">results/</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── <span class="file">{tournament_id}.json</span> <span class="comment">-- результаты турнира</span>
+  </div>
+
+  <h3>4. Типичные исправления</h3>
+
+  <p><strong>Исправить имя игрока:</strong></p>
+  <p>Откройте <code>data/db/players.json</code>, найдите ID игрока, исправьте значение.</p>
+  <pre><code>// было:
+"12345": "Иван Иванов"
+// стало:
+"12345": "Іван Іванов"</code></pre>
+
+  <p><strong>Исправить название команды:</strong></p>
+  <p>Откройте <code>data/db/{country}/display_names.json</code> и добавьте или исправьте запись:</p>
+  <pre><code>{
+  "teams": {
+    "210": "Від Гвинта -- Брати по фазі"
+  }
+}</code></pre>
+
+  <p><strong>Исправить состав команды:</strong></p>
+  <p>Откройте файл результатов <code>data/db/{country}/results/{tournament_id}.json</code>. Каждая запись выглядит так:</p>
+  <pre><code>{
+  "pos": 1.0,
+  "team_id": 316,
+  "score": 110,
+  "roster": [30260, 23740, 22331, 16499, 10182]
+}</code></pre>
+  <p><code>roster</code> -- это массив ID игроков из <code>players.json</code>. Добавьте или уберите ID.</p>
+  <p>ID игрока можно найти на <a href="https://rating.chgk.info" target="_blank">rating.chgk.info</a> -- он виден в URL страницы игрока.</p>
+
+  <p><strong>Добавить турнир:</strong></p>
+  <ol>
+    <li>Добавьте запись в <code>data/db/{country}/tournaments.json</code></li>
+    <li>Создайте файл результатов <code>data/db/{country}/results/{id}.json</code></li>
+    <li>Добавьте ID в <code>data/tournament_classification.json</code> в секцию <code>"main"</code></li>
+  </ol>
+
+  <h3>5. Пересоберите сайт</h3>
+  <pre><code>python3 build_worldwide.py</code></pre>
+  <p>Это обновит все HTML-файлы. Откройте <code>index.html</code> в браузере, проверьте результат.</p>
+
+  <h3>6. Закоммитьте и отправьте PR</h3>
+  <pre><code>git add -A
+git commit -m "Fix: исправлен состав Номер 6 в ЧУ 2017"
+git push origin main</code></pre>
+  <p>Затем на GitHub нажмите <strong>Contribute → Open Pull Request</strong>.</p>
+</div>
+
+<div class="card">
+  <h2>Формат файла результатов</h2>
+  <p>Каждый <code>results/{id}.json</code> -- массив объектов:</p>
+  <pre><code>[
+  {
+    "pos": 1.0,        // место (дробное при делёжке: 4.5)
+    "team_id": 316,    // ID команды на rating.chgk.info
+    "score": 110,      // количество взятых вопросов (0 если неизвестно)
+    "roster": [        // ID игроков (пустой массив если неизвестен)
+      30260,
+      23740,
+      22331
+    ],
+    "flags": [50]      // 50 = зачёт чемпионата страны (опционально)
+  }
+]</code></pre>
+  <div class="warn">
+    <strong>Важно:</strong> не меняйте структуру JSON. Не добавляйте запятую после последнего элемента массива.
+  </div>
+</div>
+
+<div class="card">
+  <h2>Где брать ID</h2>
+  <ul>
+    <li><strong>Игрок:</strong> <code>rating.chgk.info/player/<strong>12345</strong></code> -- число в URL</li>
+    <li><strong>Команда:</strong> <code>rating.chgk.info/teams/<strong>316</strong></code> -- число в URL</li>
+    <li><strong>Турнир:</strong> <code>rating.chgk.info/tournament/<strong>3795</strong></code> -- число в URL</li>
+  </ul>
+  <p>Если турнира нет на rating.chgk.info, используйте виртуальный ID (90000+).</p>
+</div>
+
+<div class="card">
+  <h2>Контакт</h2>
+  <p>Вопросы, предложения, данные для добавления новых стран:</p>
+  <p>📧 <a href="mailto:imangulovamal@gmail.com">imangulovamal@gmail.com</a></p>
+</div>
+
+</div>
+<footer style="text-align:center;padding:40px 20px;color:var(--text-muted);font-size:13px">
+  <a href="index.html">← Все страны</a> |
+  Данные: <a href="https://rating.chgk.info">rating.chgk.info</a> API |
+  Сделано <a href="mailto:imangulovamal@gmail.com">Амалем Имангуловым</a>
+</footer>
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+}
+(function() {
+  const s = localStorage.getItem('theme');
+  if (s) document.documentElement.setAttribute('data-theme', s);
+})();
+</script>
+</body>
+</html>
