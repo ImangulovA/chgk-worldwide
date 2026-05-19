@@ -818,10 +818,25 @@ def build_index_page(all_country_stats, cross_stats, all_iron_men):
 
 # ─── MAIN ───
 
+def load_worldwide_data():
+    """Load data from per-country split files, or fallback to single file."""
+    split_dir = DATA_DIR / "countries"
+    if split_dir.is_dir() and any(split_dir.glob("*.json")):
+        worldwide = {}
+        for f in sorted(split_dir.glob("*.json")):
+            cid = f.stem
+            with open(f) as fh:
+                worldwide[cid] = json.load(fh)
+        print(f"Loaded {len(worldwide)} countries from data/countries/")
+        return worldwide
+    with open(WORLDWIDE_DATA) as f:
+        print("Loaded from worldwide_results.json")
+        return json.load(f)
+
+
 def main():
     print("Loading data...", flush=True)
-    with open(WORLDWIDE_DATA) as f:
-        worldwide = json.load(f)
+    worldwide = load_worldwide_data()
     with open(CLASSIFICATION) as f:
         classification = json.load(f)
 
