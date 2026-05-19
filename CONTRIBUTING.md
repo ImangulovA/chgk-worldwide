@@ -1,88 +1,106 @@
 # Contributing
 
+## Структура данных
+
+```
+data/
+├── tournament_classification.json   # какие турниры в какой категории
+├── db/
+│   ├── players.json                 # {id: "Имя Фамилия", ...}
+│   ├── teams.json                   # {id: {"name": "...", "town": "...", "town_id": N}, ...}
+│   ├── russia/
+│   │   ├── meta.json                # страна, town_ids
+│   │   ├── tournaments.json         # [{id, name, date, questions}, ...]
+│   │   └── results/
+│   │       ├── 22.json              # результаты турнира 22
+│   │       ├── 76.json
+│   │       └── ...
+│   ├── uk/
+│   │   ├── meta.json
+│   │   ├── tournaments.json
+│   │   └── results/
+│   │       └── ...
+│   └── ...
+```
+
 ## Что можно поправить
 
 ### 1. Классификация турниров (самое частое)
 
 Файл `data/tournament_classification.json` определяет, какие турниры попадают на страницу каждой страны.
 
-Структура:
-```json
-{
-  "country_id": {
-    "country_name": "Название",
-    "main": [123, 456, 789],     // основные чемпионаты
-    "student": [...],             // студенческие
-    "school": [...],              // школьные
-    "youth": [...],               // молодёжные
-    "league": [...],              // лиги/этапы
-    "mirror": [...],              // синхроны/асинхроны
-    "special": [...]              // особые форматы
-  }
-}
-```
-
-На страницу страны попадают только турниры из `main`.
+На страницу попадают только турниры из категории `main`. Остальные категории: `student`, `school`, `youth`, `league`, `mirror`, `special`.
 
 **Примеры правок:**
 - Турнир неправильно классифицирован: переместите ID из одной категории в другую
-- Турнир пропущен: добавьте ID в нужную категорию
+- Турнир пропущен: добавьте ID в `main`
 - Лишний турнир: удалите ID
 
-ID турнира -- это число из URL: `rating.chgk.info/tournament/12345` -> `12345`
+ID турнира -- число из URL: `rating.chgk.info/tournament/12345` -> `12345`
 
-### 2. Данные турниров
+### 2. Результаты турнира
 
-Файлы `data/countries/{country_id}.json` содержат результаты турниров, скачанные из API rating.chgk.info.
-
-Если какого-то турнира нет в данных, но он есть в classification -- его нужно скачать. Запустите:
-
-```bash
-python3 fetch_worldwide.py  # скачает недостающие
+Файл `data/db/{страна}/results/{tournament_id}.json` содержит результаты одного турнира:
+```json
+[
+  {"pos": 1, "team_id": 4730, "score": 35, "roster": [29787, 21235, ...], "flags": [50]},
+  {"pos": 2, "team_id": 935, "score": 33, "roster": [31682, ...]},
+  ...
+]
 ```
 
-Или откройте issue, и мы добавим.
+- `pos` -- место
+- `team_id` -- ID команды (расшифровка в `teams.json`)
+- `score` -- количество взятых вопросов
+- `roster` -- ID игроков (расшифровка в `players.json`)
+- `flags` -- флаги зачёта (50 = зачёт чемпионата страны)
 
-### 3. Добавить новую страну
+### 3. Игроки и команды
+
+- `data/db/players.json` -- словарь `{id: "Имя Фамилия"}`
+- `data/db/teams.json` -- словарь `{id: {"name": "Команда", "town": "Город", "town_id": N}}`
+
+### 4. Добавить новую страну
 
 1. Найдите турниры на rating.chgk.info
-2. Добавьте запись в `data/tournament_classification.json`
-3. Скачайте данные: `python3 fetch_worldwide.py`
-4. Перегенерируйте: `python3 build_worldwide.py`
+2. Создайте папку `data/db/{slug}/` с `meta.json`, `tournaments.json`, `results/`
+3. Добавьте запись в `data/tournament_classification.json`
+4. Обновите `build_worldwide.py` (slugs, flags, colors)
+5. Перегенерируйте: `python3 build_worldwide.py`
 
-## Файлы данных
+## Страны
 
-| Файл | Страна | ID в classification |
-|------|--------|---------------------|
-| `data/countries/azerbaijan.json` | Азербайджан | 3 |
-| `data/countries/armenia.json` | Армения | 4 |
-| `data/countries/belarus.json` | Беларусь | 5 |
-| `data/countries/bulgaria.json` | Болгария | 7 |
-| `data/countries/uk.json` | Великобритания | 8 |
-| `data/countries/germany.json` | Германия | 9 |
-| `data/countries/georgia.json` | Грузия | 10 |
-| `data/countries/israel.json` | Израиль | 11 |
-| `data/countries/kazakhstan.json` | Казахстан | 13 |
-| `data/countries/canada.json` | Канада | 14 |
-| `data/countries/kyrgyzstan.json` | Кыргызстан | 16 |
-| `data/countries/latvia.json` | Латвия | 17 |
-| `data/countries/lithuania.json` | Литва | 18 |
-| `data/countries/moldova.json` | Молдова | 19 |
-| `data/countries/russia.json` | Россия | 21 |
-| `data/countries/usa.json` | США | 22 |
-| `data/countries/turkmenistan.json` | Туркменистан | 23 |
-| `data/countries/uzbekistan.json` | Узбекистан | 25 |
-| `data/countries/ukraine.json` | Украина | 26 |
-| `data/countries/finland.json` | Финляндия | 27 |
-| `data/countries/czechia.json` | Чехия | 29 |
-| `data/countries/estonia.json` | Эстония | 31 |
-| `data/countries/poland.json` | Польша | 99 |
-| `data/countries/cyprus.json` | Кипр | 100 |
-| `data/countries/switzerland.json` | Швейцария | 101 |
+| Папка | Страна | ID |
+|-------|--------|-----|
+| `azerbaijan` | Азербайджан | 3 |
+| `armenia` | Армения | 4 |
+| `belarus` | Беларусь | 5 |
+| `bulgaria` | Болгария | 7 |
+| `uk` | Великобритания | 8 |
+| `germany` | Германия | 9 |
+| `georgia` | Грузия | 10 |
+| `israel` | Израиль | 11 |
+| `kazakhstan` | Казахстан | 13 |
+| `canada` | Канада | 14 |
+| `cyprus` | Кипр | 100 |
+| `kyrgyzstan` | Кыргызстан | 16 |
+| `latvia` | Латвия | 17 |
+| `lithuania` | Литва | 18 |
+| `moldova` | Молдова | 19 |
+| `poland` | Польша | 99 |
+| `russia` | Россия | 21 |
+| `switzerland` | Швейцария | 101 |
+| `turkmenistan` | Туркменистан | 23 |
+| `usa` | США | 22 |
+| `uzbekistan` | Узбекистан | 25 |
+| `ukraine` | Украина | 26 |
+| `finland` | Финляндия | 27 |
+| `czechia` | Чехия | 29 |
+| `estonia` | Эстония | 31 |
 
 ## Как сделать PR
 
 1. Fork репозитория
-2. Отредактируйте `data/tournament_classification.json` (и/или файлы в `data/countries/`)
+2. Отредактируйте нужный файл
 3. Опишите в PR, что и почему поменяли
-4. Если добавляете новый турнир, укажите ссылку на rating.chgk.info
+4. Если добавляете турнир, укажите ссылку на rating.chgk.info

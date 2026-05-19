@@ -1,0 +1,665 @@
+[
+ {
+  "pos": 1,
+  "team_id": 7804,
+  "score": 62,
+  "roster": [
+   36592,
+   32105,
+   24850,
+   19553,
+   15746,
+   3026
+  ],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 2,
+  "team_id": 3231,
+  "score": 60,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 3,
+  "team_id": 5729,
+  "score": 59,
+  "roster": [
+   28306,
+   27648,
+   26358,
+   25524,
+   12941,
+   641
+  ],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 4,
+  "team_id": 6278,
+  "score": 58,
+  "roster": [
+   40630,
+   40629,
+   29890,
+   20905
+  ],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 5,
+  "team_id": 3554,
+  "score": 55,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 6.5,
+  "team_id": 5654,
+  "score": 51,
+  "roster": [
+   40782,
+   35729,
+   34737,
+   15131,
+   8379,
+   3112
+  ],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 6.5,
+  "team_id": 8715,
+  "score": 51,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 8,
+  "team_id": 7556,
+  "score": 50,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 10.5,
+  "team_id": 2156,
+  "score": 49,
+  "roster": [
+   94780,
+   35271,
+   17982,
+   15316,
+   11224,
+   8940
+  ],
+  "flags": [
+   37
+  ]
+ },
+ {
+  "pos": 10.5,
+  "team_id": 7037,
+  "score": 49,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 10.5,
+  "team_id": 99342,
+  "score": 49,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 10.5,
+  "team_id": 99343,
+  "score": 49,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 13.5,
+  "team_id": 4274,
+  "score": 48,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 13.5,
+  "team_id": 99344,
+  "score": 48,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 15.5,
+  "team_id": 5881,
+  "score": 47,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 15.5,
+  "team_id": 8038,
+  "score": 47,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 17,
+  "team_id": 5318,
+  "score": 46,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 20.5,
+  "team_id": 4854,
+  "score": 44,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 20.5,
+  "team_id": 99345,
+  "score": 44,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 20.5,
+  "team_id": 99346,
+  "score": 44,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 20.5,
+  "team_id": 99347,
+  "score": 44,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 20.5,
+  "team_id": 99348,
+  "score": 44,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 20.5,
+  "team_id": 99349,
+  "score": 44,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 24.5,
+  "team_id": 43679,
+  "score": 43,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 24.5,
+  "team_id": 99350,
+  "score": 43,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 26.5,
+  "team_id": 2297,
+  "score": 42,
+  "roster": [
+   211319,
+   63343,
+   38340,
+   30344,
+   11223
+  ],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 26.5,
+  "team_id": 8002,
+  "score": 42,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 30.5,
+  "team_id": 5668,
+  "score": 41,
+  "roster": [
+   63329,
+   36380,
+   12508,
+   11031,
+   7832,
+   747
+  ],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 30.5,
+  "team_id": 37841,
+  "score": 41,
+  "roster": [
+   308771,
+   178771,
+   56489,
+   54640,
+   41341,
+   4478
+  ],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 30.5,
+  "team_id": 39430,
+  "score": 41,
+  "roster": [
+   308772,
+   68217,
+   64248,
+   64246,
+   12247,
+   6169
+  ],
+  "flags": [
+   37
+  ]
+ },
+ {
+  "pos": 30.5,
+  "team_id": 99321,
+  "score": 41,
+  "roster": [
+   309200,
+   41204,
+   41203,
+   41202,
+   41201,
+   41199
+  ],
+  "flags": [
+   37
+  ]
+ },
+ {
+  "pos": 30.5,
+  "team_id": 99351,
+  "score": 41,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 30.5,
+  "team_id": 99352,
+  "score": 41,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 35,
+  "team_id": 1999,
+  "score": 40,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 35,
+  "team_id": 6006,
+  "score": 40,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 35,
+  "team_id": 99353,
+  "score": 40,
+  "roster": [],
+  "flags": [
+   37
+  ]
+ },
+ {
+  "pos": 37.5,
+  "team_id": 4856,
+  "score": 38,
+  "roster": [],
+  "flags": [
+   37
+  ]
+ },
+ {
+  "pos": 37.5,
+  "team_id": 99354,
+  "score": 38,
+  "roster": [
+   32783,
+   32292,
+   29630,
+   24894,
+   9581
+  ],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 39.5,
+  "team_id": 5304,
+  "score": 35,
+  "roster": [
+   32971,
+   31300,
+   23809,
+   18958,
+   15728,
+   11361
+  ],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 39.5,
+  "team_id": 99355,
+  "score": 35,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 42,
+  "team_id": 6569,
+  "score": 34,
+  "roster": [],
+  "flags": [
+   37
+  ]
+ },
+ {
+  "pos": 42,
+  "team_id": 99356,
+  "score": 34,
+  "roster": [],
+  "flags": [
+   37
+  ]
+ },
+ {
+  "pos": 42,
+  "team_id": 99357,
+  "score": 34,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 44.5,
+  "team_id": 38358,
+  "score": 33,
+  "roster": [],
+  "flags": [
+   37
+  ]
+ },
+ {
+  "pos": 44.5,
+  "team_id": 99332,
+  "score": 33,
+  "roster": [],
+  "flags": [
+   37
+  ]
+ },
+ {
+  "pos": 46.5,
+  "team_id": 6161,
+  "score": 32,
+  "roster": [],
+  "flags": [
+   37
+  ]
+ },
+ {
+  "pos": 46.5,
+  "team_id": 99333,
+  "score": 32,
+  "roster": [],
+  "flags": [
+   37
+  ]
+ },
+ {
+  "pos": 48.5,
+  "team_id": 27397,
+  "score": 31,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 48.5,
+  "team_id": 99358,
+  "score": 31,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 51,
+  "team_id": 380,
+  "score": 30,
+  "roster": [],
+  "flags": [
+   37
+  ]
+ },
+ {
+  "pos": 51,
+  "team_id": 99359,
+  "score": 30,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 51,
+  "team_id": 99360,
+  "score": 30,
+  "roster": [],
+  "flags": [
+   37
+  ]
+ },
+ {
+  "pos": 53,
+  "team_id": 99361,
+  "score": 29,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 55,
+  "team_id": 10414,
+  "score": 28,
+  "roster": [],
+  "flags": [
+   37
+  ]
+ },
+ {
+  "pos": 55,
+  "team_id": 44460,
+  "score": 28,
+  "roster": [],
+  "flags": [
+   37
+  ]
+ },
+ {
+  "pos": 55,
+  "team_id": 99362,
+  "score": 28,
+  "roster": [],
+  "flags": [
+   37
+  ]
+ },
+ {
+  "pos": 58,
+  "team_id": 6904,
+  "score": 25,
+  "roster": [],
+  "flags": [
+   37
+  ]
+ },
+ {
+  "pos": 58,
+  "team_id": 38489,
+  "score": 25,
+  "roster": [
+   319789,
+   319788,
+   319787,
+   319786,
+   59261,
+   59259
+  ],
+  "flags": [
+   37
+  ]
+ },
+ {
+  "pos": 58,
+  "team_id": 99363,
+  "score": 25,
+  "roster": [],
+  "flags": [
+   37
+  ]
+ },
+ {
+  "pos": 60,
+  "team_id": 99364,
+  "score": 22,
+  "roster": [],
+  "flags": [
+   38
+  ]
+ },
+ {
+  "pos": 61,
+  "team_id": 34223,
+  "score": 21,
+  "roster": [],
+  "flags": [
+   37
+  ]
+ },
+ {
+  "pos": 62,
+  "team_id": 99365,
+  "score": 20,
+  "roster": [],
+  "flags": [
+   37
+  ]
+ },
+ {
+  "pos": 63,
+  "team_id": 3290,
+  "score": 17,
+  "roster": [],
+  "flags": [
+   37
+  ]
+ },
+ {
+  "pos": 64,
+  "team_id": 99366,
+  "score": 14,
+  "roster": [],
+  "flags": [
+   37
+  ]
+ }
+]

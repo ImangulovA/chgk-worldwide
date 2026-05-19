@@ -1,0 +1,81 @@
+[
+ {
+  "pos": 1,
+  "team_id": 243,
+  "score": 0,
+  "roster": [
+   22133,
+   13721,
+   8450,
+   1872,
+   1646,
+   236
+  ]
+ },
+ {
+  "pos": 3,
+  "team_id": 242,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 3,
+  "team_id": 268,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 3,
+  "team_id": 299,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 5,
+  "team_id": 543,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 6,
+  "team_id": 2271,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 7,
+  "team_id": 856,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 8,
+  "team_id": 648,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 9,
+  "team_id": 1493,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 10,
+  "team_id": 487,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 11,
+  "team_id": 486,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 12,
+  "team_id": 1494,
+  "score": 0,
+  "roster": []
+ }
+]

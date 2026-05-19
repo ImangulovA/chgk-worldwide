@@ -1,0 +1,193 @@
+[
+ {
+  "pos": 1,
+  "team_id": 9,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 2,
+  "team_id": 10343,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 3,
+  "team_id": 10405,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 5,
+  "team_id": 49,
+  "score": 0,
+  "roster": [
+   35698,
+   34939,
+   34071,
+   24219,
+   18405,
+   12929
+  ]
+ },
+ {
+  "pos": 5,
+  "team_id": 531,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 5,
+  "team_id": 1128,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 7,
+  "team_id": 99451,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 8.5,
+  "team_id": 934,
+  "score": 0,
+  "roster": [
+   9763,
+   9426
+  ]
+ },
+ {
+  "pos": 8.5,
+  "team_id": 99452,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 11.5,
+  "team_id": 557,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 11.5,
+  "team_id": 1478,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 11.5,
+  "team_id": 6160,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 11.5,
+  "team_id": 99453,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 14,
+  "team_id": 1131,
+  "score": 0,
+  "roster": [
+   36724,
+   35917,
+   25752,
+   22325,
+   21756,
+   4020
+  ]
+ },
+ {
+  "pos": 15,
+  "team_id": 99454,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 17,
+  "team_id": 1589,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 17,
+  "team_id": 99455,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 17,
+  "team_id": 99456,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 19.5,
+  "team_id": 443,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 19.5,
+  "team_id": 99457,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 22.5,
+  "team_id": 478,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 22.5,
+  "team_id": 10334,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 22.5,
+  "team_id": 99437,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 22.5,
+  "team_id": 99441,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 25,
+  "team_id": 99458,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 26,
+  "team_id": 99459,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 27,
+  "team_id": 99460,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 28,
+  "team_id": 99461,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 29,
+  "team_id": 99462,
+  "score": 0,
+  "roster": []
+ }
+]

@@ -818,22 +818,93 @@ def build_index_page(all_country_stats, cross_stats, all_iron_men):
 
 # ─── MAIN ───
 
-SLUG_TO_CID = {v: k for k, v in COUNTRY_SLUGS.items()}
-
-
 def load_worldwide_data():
-    """Load data from per-country split files, or fallback to single file."""
+    """Load data from normalized db structure, split files, or single file."""
+    db_dir = DATA_DIR / "db"
+    if db_dir.is_dir() and (db_dir / "players.json").exists():
+        with open(db_dir / "players.json") as f:
+            players_global = json.load(f)
+        with open(db_dir / "teams.json") as f:
+            teams_global = json.load(f)
+
+        worldwide = {}
+        for country_dir in sorted(db_dir.iterdir()):
+            if not country_dir.is_dir():
+                continue
+            meta_path = country_dir / "meta.json"
+            if not meta_path.exists():
+                continue
+            with open(meta_path) as f:
+                meta = json.load(f)
+            with open(country_dir / "tournaments.json") as f:
+                tournaments_list = json.load(f)
+
+            cid = str(meta["id"])
+            tournaments = {}
+            results_dir = country_dir / "results"
+
+            for t in tournaments_list:
+                tid = t["id"]
+                result_path = results_dir / f"{tid}.json"
+                if not result_path.exists():
+                    continue
+                with open(result_path) as f:
+                    result_rows = json.load(f)
+
+                full_results = []
+                for row in result_rows:
+                    team_id = row["team_id"]
+                    team_info = teams_global.get(str(team_id), {})
+                    members = []
+                    for pid in row.get("roster", []):
+                        pname = players_global.get(str(pid), "?")
+                        name_parts = pname.rsplit(" ", 1)
+                        members.append({"player": {
+                            "id": pid,
+                            "name": name_parts[0] if len(name_parts) > 1 else pname,
+                            "surname": name_parts[1] if len(name_parts) > 1 else "",
+                        }})
+                    flags = [{"id": fid} for fid in row.get("flags", [])]
+                    full_results.append({
+                        "position": row["pos"],
+                        "questionsTotal": row["score"],
+                        "team": {
+                            "id": team_id,
+                            "name": team_info.get("name", "?"),
+                            "town": {"id": team_info.get("town_id", 0), "name": team_info.get("town", "?")},
+                        },
+                        "teamMembers": members,
+                        "flags": flags,
+                    })
+
+                info = {
+                    "name": t["name"],
+                    "dateStart": t["date"] + "T00:00:00+00:00",
+                    "questionQty": {"total": t.get("questions", 0)},
+                }
+                tournaments[str(tid)] = {"info": info, "results": full_results}
+
+            worldwide[cid] = {
+                "country": {"id": meta["id"], "name": meta["name"]},
+                "genitive": meta.get("genitive", meta["name"]),
+                "towns": [],
+                "town_ids": meta.get("town_ids", []),
+                "tournaments": tournaments,
+            }
+        print(f"Loaded {len(worldwide)} countries from data/db/")
+        return worldwide
+
     split_dir = DATA_DIR / "countries"
     if split_dir.is_dir() and any(split_dir.glob("*.json")):
         worldwide = {}
         for f in sorted(split_dir.glob("*.json")):
-            slug = f.stem
             with open(f) as fh:
                 cdata = json.load(fh)
             cid = str(cdata["country"]["id"])
             worldwide[cid] = cdata
         print(f"Loaded {len(worldwide)} countries from data/countries/")
         return worldwide
+
     with open(WORLDWIDE_DATA) as f:
         print("Loaded from worldwide_results.json")
         return json.load(f)

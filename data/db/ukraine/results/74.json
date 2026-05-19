@@ -1,0 +1,111 @@
+[
+ {
+  "pos": 1,
+  "team_id": 267,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 2,
+  "team_id": 101,
+  "score": 0,
+  "roster": [
+   30260,
+   23751,
+   16499,
+   15674,
+   14596,
+   3293
+  ]
+ },
+ {
+  "pos": 3,
+  "team_id": 10256,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 4,
+  "team_id": 26958,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 5,
+  "team_id": 277,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 6,
+  "team_id": 540,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 7,
+  "team_id": 552,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 8,
+  "team_id": 1470,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 9,
+  "team_id": 83,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 10,
+  "team_id": 493,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 11,
+  "team_id": 1472,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 12,
+  "team_id": 383,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 13,
+  "team_id": 1933,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 14,
+  "team_id": 561,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 15,
+  "team_id": 46,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 16,
+  "team_id": 337,
+  "score": 0,
+  "roster": []
+ },
+ {
+  "pos": 17,
+  "team_id": 255,
+  "score": 0,
+  "roster": []
+ }
+]
