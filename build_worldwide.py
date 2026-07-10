@@ -504,6 +504,9 @@ def build_country_page(stats, country_name, country_genitive, back_link="../inde
     flag = COUNTRY_FLAGS.get(country_name, "🏴")
     iron_men = stats.get("iron_men", [])
     skip = COUNTRY_SKIP_SECTIONS.get(country_name, set())
+    # With a single tournament, "over time" aggregations (podiums, participations,
+    # team wins) are empty or degenerate -- skip them to keep the page clean.
+    single = len(tournaments) <= 1
 
     all_years = sorted(set(t["year"] for t in tournaments))
     first_year = all_years[0] if all_years else "?"
@@ -524,8 +527,10 @@ def build_country_page(stats, country_name, country_genitive, back_link="../inde
         return team_link(name, t_id, tid_map)
 
     nav_items = ['<a href="#overview">Обзор</a>', '<a href="#champions">Чемпионы</a>',
-                 '<a href="#players">Игроки</a>', '<a href="#teams">Команды</a>',
-                 '<a href="#tournaments">Турниры</a>']
+                 '<a href="#players">Игроки</a>']
+    if not single:
+        nav_items.append('<a href="#teams">Команды</a>')
+    nav_items.append('<a href="#tournaments">Турниры</a>')
     if iron_men and "iron_men" not in skip:
         nav_items.insert(-1, '<a href="#ironmen">Железные люди</a>')
 
@@ -629,39 +634,41 @@ def build_country_page(stats, country_name, country_genitive, back_link="../inde
         h.append(f'<div class="bar-row filterable" data-section="pw-o" data-years="{dyears}"><div class="bar-label">{player_link(pid, pn.get(pid, "?"))}</div><div class="bar-track">{bar_html(len(wins), max_w, "#f59e0b")}</div><div class="bar-value">{len(wins)}</div></div>')
     h.append("</div>")
 
-    h.append(f'<div class="card country-only"><h2>Игроки -- подиумы (зачёт ЧС)</h2>')
-    h.append(year_filter_pills("pp-c", all_years))
-    h.append('<table><thead><tr><th>#</th><th>Игрок</th><th>Подиумов</th><th>Побед</th><th>Детали</th></tr></thead><tbody>')
-    for rank, (pid, podiums) in tied_ranks(top_country_podiums[:30], key=lambda x: -len(x[1])):
-        if len(podiums) < 2: break
-        wins = len(stats["player_wins_country"].get(pid, []))
-        details = " ".join(f'<span class="year-tag">{medal_icon(p)}{y}</span>' for y, t, p in podiums)
-        dyears = participation_years.get(pid, "")
-        h.append(f'<tr class="filterable" data-section="pp-c" data-years="{dyears}"><td class="pos">{rank}</td><td class="team-name">{player_link(pid, pn.get(pid, "?"))}</td><td class="score">{len(podiums)}</td><td class="score">{wins}</td><td>{details}</td></tr>')
-    h.append("</tbody></table></div>")
+    if not single:
+        h.append(f'<div class="card country-only"><h2>Игроки -- подиумы (зачёт ЧС)</h2>')
+        h.append(year_filter_pills("pp-c", all_years))
+        h.append('<table><thead><tr><th>#</th><th>Игрок</th><th>Подиумов</th><th>Побед</th><th>Детали</th></tr></thead><tbody>')
+        for rank, (pid, podiums) in tied_ranks(top_country_podiums[:30], key=lambda x: -len(x[1])):
+            if len(podiums) < 2: break
+            wins = len(stats["player_wins_country"].get(pid, []))
+            details = " ".join(f'<span class="year-tag">{medal_icon(p)}{y}</span>' for y, t, p in podiums)
+            dyears = participation_years.get(pid, "")
+            h.append(f'<tr class="filterable" data-section="pp-c" data-years="{dyears}"><td class="pos">{rank}</td><td class="team-name">{player_link(pid, pn.get(pid, "?"))}</td><td class="score">{len(podiums)}</td><td class="score">{wins}</td><td>{details}</td></tr>')
+        h.append("</tbody></table></div>")
 
-    h.append(f'<div class="card overall-only"><h2>Игроки -- подиумы (общий зачёт)</h2>')
-    h.append(year_filter_pills("pp-o", all_years))
-    h.append('<table><thead><tr><th>#</th><th>Игрок</th><th>Подиумов</th><th>Побед</th><th>Детали</th></tr></thead><tbody>')
-    for rank, (pid, podiums) in tied_ranks(top_overall_podiums[:30], key=lambda x: -len(x[1])):
-        if len(podiums) < 2: break
-        wins = len(stats["player_wins_overall"].get(pid, []))
-        details = " ".join(f'<span class="year-tag">{medal_icon(p)}{y}</span>' for y, t, p in podiums)
-        dyears = participation_years.get(pid, "")
-        h.append(f'<tr class="filterable" data-section="pp-o" data-years="{dyears}"><td class="pos">{rank}</td><td class="team-name">{player_link(pid, pn.get(pid, "?"))}</td><td class="score">{len(podiums)}</td><td class="score">{wins}</td><td>{details}</td></tr>')
-    h.append("</tbody></table></div>")
+        h.append(f'<div class="card overall-only"><h2>Игроки -- подиумы (общий зачёт)</h2>')
+        h.append(year_filter_pills("pp-o", all_years))
+        h.append('<table><thead><tr><th>#</th><th>Игрок</th><th>Подиумов</th><th>Побед</th><th>Детали</th></tr></thead><tbody>')
+        for rank, (pid, podiums) in tied_ranks(top_overall_podiums[:30], key=lambda x: -len(x[1])):
+            if len(podiums) < 2: break
+            wins = len(stats["player_wins_overall"].get(pid, []))
+            details = " ".join(f'<span class="year-tag">{medal_icon(p)}{y}</span>' for y, t, p in podiums)
+            dyears = participation_years.get(pid, "")
+            h.append(f'<tr class="filterable" data-section="pp-o" data-years="{dyears}"><td class="pos">{rank}</td><td class="team-name">{player_link(pid, pn.get(pid, "?"))}</td><td class="score">{len(podiums)}</td><td class="score">{wins}</td><td>{details}</td></tr>')
+        h.append("</tbody></table></div>")
 
-    h.append(f'<div class="card"><h2>Игроки -- участия</h2>')
-    h.append(year_filter_pills("pt", all_years))
-    h.append('<table><thead><tr><th>#</th><th>Игрок</th><th>Турниров</th><th>Годы</th></tr></thead><tbody>')
-    min_parts = max(3, len(tournaments) // 4)
-    for rank, (pid, parts) in tied_ranks(top_participations[:30], key=lambda x: -len(x[1])):
-        if len(parts) < min_parts: break
-        yrs = sorted(set(p["year"] for p in parts))
-        yrs_html = " ".join(f'<span class="year-tag">{y}</span>' for y in yrs)
-        dyears = ",".join(yrs)
-        h.append(f'<tr class="filterable" data-section="pt" data-years="{dyears}"><td class="pos">{rank}</td><td class="team-name">{player_link(pid, pn.get(pid, "?"))}</td><td class="score">{len(parts)}</td><td>{yrs_html}</td></tr>')
-    h.append("</tbody></table></div></section>")
+        h.append(f'<div class="card"><h2>Игроки -- участия</h2>')
+        h.append(year_filter_pills("pt", all_years))
+        h.append('<table><thead><tr><th>#</th><th>Игрок</th><th>Турниров</th><th>Годы</th></tr></thead><tbody>')
+        min_parts = max(3, len(tournaments) // 4)
+        for rank, (pid, parts) in tied_ranks(top_participations[:30], key=lambda x: -len(x[1])):
+            if len(parts) < min_parts: break
+            yrs = sorted(set(p["year"] for p in parts))
+            yrs_html = " ".join(f'<span class="year-tag">{y}</span>' for y in yrs)
+            dyears = ",".join(yrs)
+            h.append(f'<tr class="filterable" data-section="pt" data-years="{dyears}"><td class="pos">{rank}</td><td class="team-name">{player_link(pid, pn.get(pid, "?"))}</td><td class="score">{len(parts)}</td><td>{yrs_html}</td></tr>')
+        h.append("</tbody></table></div>")
+    h.append("</section>")
 
     # === IRON MEN ===
     if iron_men and "iron_men" not in skip:
@@ -672,31 +679,32 @@ def build_country_page(stats, country_name, country_genitive, back_link="../inde
             h.append(f'<tr><td class="pos">{i}</td><td class="team-name">{player_link(im["id"], im["name"])} <span class="iron-badge">IRON</span></td><td class="score">{im["count"]}</td></tr>')
         h.append("</tbody></table></div></section>")
 
-    # === TEAMS ===
-    h.append(f'<section id="teams"><div class="card country-only"><h2>Команды -- победы (зачёт ЧС)</h2>')
-    max_tw = len(top_team_wins_country[0][1]) if top_team_wins_country else 1
-    for tn, wy in top_team_wins_country[:15]:
-        if not wy: break
-        h.append(f'<div class="bar-row"><div class="bar-label">{tl(tn)}</div><div class="bar-track">{bar_html(len(wy), max_tw, "#02e2ac")}</div><div class="bar-value">{len(wy)}</div></div>')
-    h.append("</div>")
+    # === TEAMS === (skipped for single-tournament countries: champion already shown above)
+    if not single:
+        h.append(f'<section id="teams"><div class="card country-only"><h2>Команды -- победы (зачёт ЧС)</h2>')
+        max_tw = len(top_team_wins_country[0][1]) if top_team_wins_country else 1
+        for tn, wy in top_team_wins_country[:15]:
+            if not wy: break
+            h.append(f'<div class="bar-row"><div class="bar-label">{tl(tn)}</div><div class="bar-track">{bar_html(len(wy), max_tw, "#02e2ac")}</div><div class="bar-value">{len(wy)}</div></div>')
+        h.append("</div>")
 
-    h.append(f'<div class="card overall-only"><h2>Команды -- победы (общий зачёт)</h2>')
-    max_tw = len(top_team_wins_overall[0][1]) if top_team_wins_overall else 1
-    for tn, wy in top_team_wins_overall[:15]:
-        if not wy: break
-        h.append(f'<div class="bar-row"><div class="bar-label">{tl(tn)}</div><div class="bar-track">{bar_html(len(wy), max_tw, "#02e2ac")}</div><div class="bar-value">{len(wy)}</div></div>')
-    h.append("</div>")
+        h.append(f'<div class="card overall-only"><h2>Команды -- победы (общий зачёт)</h2>')
+        max_tw = len(top_team_wins_overall[0][1]) if top_team_wins_overall else 1
+        for tn, wy in top_team_wins_overall[:15]:
+            if not wy: break
+            h.append(f'<div class="bar-row"><div class="bar-label">{tl(tn)}</div><div class="bar-track">{bar_html(len(wy), max_tw, "#02e2ac")}</div><div class="bar-value">{len(wy)}</div></div>')
+        h.append("</div>")
 
-    h.append(f'<div class="card"><h2>Команды -- участия</h2>')
-    h.append(year_filter_pills("tp", all_years))
-    h.append('<table><thead><tr><th>#</th><th>Команда</th><th>Турниров</th><th>Годы</th></tr></thead><tbody>')
-    for rank, (tn, yrs) in tied_ranks(top_team_parts[:25], key=lambda x: -len(set(x[1]))):
-        if len(yrs) < 3: break
-        unique_yrs = sorted(set(yrs))
-        yrs_html = " ".join(f'<span class="year-tag">{y}</span>' for y in unique_yrs)
-        dyears = ",".join(unique_yrs)
-        h.append(f'<tr class="filterable" data-section="tp" data-years="{dyears}"><td class="pos">{rank}</td><td class="team-name">{tl(tn)}</td><td class="score">{len(unique_yrs)}</td><td>{yrs_html}</td></tr>')
-    h.append("</tbody></table></div></section>")
+        h.append(f'<div class="card"><h2>Команды -- участия</h2>')
+        h.append(year_filter_pills("tp", all_years))
+        h.append('<table><thead><tr><th>#</th><th>Команда</th><th>Турниров</th><th>Годы</th></tr></thead><tbody>')
+        for rank, (tn, yrs) in tied_ranks(top_team_parts[:25], key=lambda x: -len(set(x[1]))):
+            if len(yrs) < 3: break
+            unique_yrs = sorted(set(yrs))
+            yrs_html = " ".join(f'<span class="year-tag">{y}</span>' for y in unique_yrs)
+            dyears = ",".join(unique_yrs)
+            h.append(f'<tr class="filterable" data-section="tp" data-years="{dyears}"><td class="pos">{rank}</td><td class="team-name">{tl(tn)}</td><td class="score">{len(unique_yrs)}</td><td>{yrs_html}</td></tr>')
+        h.append("</tbody></table></div></section>")
 
     # === TOURNAMENTS ===
     h.append('<section id="tournaments"><div class="card"><h2>Все турниры</h2></div>')
