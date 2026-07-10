@@ -457,6 +457,15 @@ COUNTRY_COLORS = {
     "Черногория": "#c0392b",
 }
 
+# Countries whose real outline is too tiny to see (or absent from the geo data):
+# draw a highlighted circle marker so they're visible and clickable.
+# Черногория has no path in map_data, so its center is computed here.
+SMALL_COUNTRY_CENTERS = {
+    "Кипр": (876.5, 292.8),
+    "Черногория": (805.0, 230.0),
+}
+SMALL_MARKER_R = 7
+
 def build_map_svg(country_summaries):
     """Build an inline SVG world map with real country outlines."""
     from map_data import VIEW_W, VIEW_H, BG_PATHS, COUNTRY_PATHS, COUNTRY_CENTERS
@@ -468,18 +477,22 @@ def build_map_svg(country_summaries):
         svg.append(f'<path d="{path}" class="map-bg"/>')
 
     for cname, cs in country_summaries.items():
-        if cname not in COUNTRY_PATHS:
+        paths = COUNTRY_PATHS.get(cname, [])
+        center = COUNTRY_CENTERS.get(cname) or SMALL_COUNTRY_CENTERS.get(cname)
+        if not paths and cname not in SMALL_COUNTRY_CENTERS:
             continue
         slug = COUNTRY_SLUGS.get(cname, cname.lower())
         color = COUNTRY_COLORS.get(cname, "#1877F2")
         flag = COUNTRY_FLAGS.get(cname, "")
-        paths = COUNTRY_PATHS[cname]
 
         svg.append(f'<a href="countries/{slug}.html">')
         for p in paths:
             svg.append(f'  <path d="{p}" class="map-country" fill="{color}" opacity="0.75"/>')
-        if cname in COUNTRY_CENTERS:
-            cx, cy = COUNTRY_CENTERS[cname]
+        if cname in SMALL_COUNTRY_CENTERS and center:
+            cx, cy = center
+            svg.append(f'  <circle class="map-country" cx="{cx}" cy="{cy}" r="{SMALL_MARKER_R}" fill="{color}" opacity="0.85"/>')
+        if center:
+            cx, cy = center
             svg.append(f'  <text class="map-flag" x="{cx}" y="{cy}">{flag}</text>')
         svg.append('</a>')
 
